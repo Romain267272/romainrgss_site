@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadre avec pseudo</title>
+  <!-- Lien vers la librairie d'icônes Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      /* Mise en place du fond d'image */
+      background-image: url('https://i.pinimg.com/1200x/55/63/77/556377147a541ee4932634f55e226791.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-color: #0a0a0a;
+      
+      color: white;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      margin: 0;
+      padding-top: 80px;
+    }
+
+    /* Masque le lecteur audio pour qu'il soit invisible */
+    #background-music {
+      display: none;
+    }
+    
+    .card {
+      /* Ajout d'une transparence pour mieux voir le fond */
+      background-color: rgba(30, 30, 30, 0.8); 
+      border: 2px solid #555;
+      border-radius: 12px;
+      padding: 40px 30px 60px 30px;
+      width: 320px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      text-align: center;
+      /* Assure que la carte est au-dessus du fond */
+      z-index: 1; 
+      
+      /* Modification pour allonger le cadre vers le bas */
+      min-height: 300px; /* Hauteur minimale encore réduite */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* J'ai ajusté le padding en haut pour faire de la place à l'image */
+      padding: 20px 30px 60px 30px;
+
+      /* Animation de remontée */
+      opacity: 0;
+      transform: translateY(100vh); /* Démarre la carte en bas de l'écran */
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Ajoute une transition fluide */
+      position: relative; /* Pour que le positionnement absolu du bouton fonctionne */
+    }
+
+    /* Classe qui s'ajoute via JavaScript pour déclencher l'animation */
+    .card.show {
+      opacity: 1;
+      transform: translateY(0); /* Remonte la carte à sa position initiale */
+    }
+    
+    /* Nouveau style pour la photo de profil */
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%; /* Pour une forme de cercle */
+        border: 2px solid #555;
+        margin-bottom: 20px;
+        object-fit: cover;
+    }
+
+    .pseudo {
+      /* Ajout d'une transparence pour mieux voir le fond */
+      background-color: rgba(30, 30, 30, 0.8); 
+      /* même bord que le cadre */
+      border: 2px solid #555; 
+      border-radius: 10px;
+      padding: 10px 20px;
+      /* plus gros */
+      font-size: 2.2em; 
+      font-weight: bold;
+      margin-bottom: 30px;
+      display: inline-block;
+      z-index: 1;
+    }
+    
+    /* Conteneur pour les carrés afin de les centrer */
+    .squares-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px; /* Ajoute de l'espace entre les carrés */
+      /* Correction : J'ai ajusté la marge du haut pour les déplacer vers le haut */
+      margin-top: -20px;
+      /* J'ai ajouté une largeur pour que le conteneur soit centré avec le bouton de musique */
+      width: 300px;
+    }
+
+    /* Nouveau style pour les carrés */
+    .square {
+      width: 80px;
+      height: 80px;
+      /* Correction : La couleur de fond est maintenant foncée pour correspondre au reste */
+      background-color: rgba(30, 30, 30, 0.8);
+      /* Correction : La bordure est maintenant plus épaisse et foncée pour correspondre au reste */
+      border: 2px solid #555;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s; /* Ajout d'une transition pour l'effet de survol */
+    }
+
+    .square:hover {
+      transform: scale(1.1); /* Effet de zoom au survol */
+    }
+
+    /* Style des icônes à l'intérieur des carrés */
+    .square i {
+      font-size: 3em;
+      color: white;
+    }
+
+    /* Nouveau style pour le bouton de musique rectangulaire */
+    .music-toggle-button {
+      display: flex; /* Utilisation de flexbox pour aligner le texte et l'icône */
+      justify-content: flex-start; /* Aligne le contenu à gauche */
+      align-items: center;
+      width: 300px; /* Largeur du bouton rectangulaire augmentée */
+      padding: 15px 25px;
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: white;
+      background-color: rgba(30, 30, 30, 0.8);
+      border: 2px solid #555;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out, transform 0.2s;
+      text-align: left; /* Pour que le texte s'aligne correctement */
+    }
+
+    .music-toggle-button:hover {
+      background-color: rgba(50, 50, 50, 0.8);
+      transform: scale(1.05);
+    }
+
+    .music-toggle-button .icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em; 
+        width: 40px; 
+        /* Correction : Ajoute une hauteur fixe pour empêcher le décalage */
+        height: 40px; 
+        margin-right: 15px;
+        /* Correction : Empêche le conteneur de se réduire */
+        flex-shrink: 0;
+        /* Ajustement de la marge pour décaler le logo à gauche */
+        margin-left: -10px; 
+    }
+
+    .music-toggle-button .music-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1; /* Permet au conteneur de s'étendre */
+    }
+
+    .music-toggle-button .music-info .music-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        margin-right: 15px;
+        object-fit: cover;
+    }
+
+    .music-toggle-button .music-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .music-toggle-button .music-text .track-name {
+        font-size: 1em;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+
+    .music-toggle-button .music-text .artist-name {
+        font-size: 0.8em;
+        font-weight: normal;
+        color: #bbb;
+    }
+    
+    /* Styles pour le conteneur du jeu, maintenant un long rectangle horizontal encore plus fin */
+    #game-container {
+      margin-top: 10px; /* Mise à jour pour le déplacer plus haut */
+      width: 300px; /* Même largeur que le bouton de musique */
+      height: 100px; /* Hauteur réduite pour un aspect plus fin */
+      border: 2px solid #555;
+      border-radius: 8px;
+      background-color: rgba(30, 30, 30, 0.8);
+      position: relative;
+      overflow: hidden;
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    /* Style pour le canvas du jeu, pour qu'il prenne toute la place */
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(30, 30, 30, 0.8);
+      display: block;
+      image-rendering: pixelated; /* Pour le rendu pixel art */
+    }
+
+    /* Style pour le message de jeu */
+    #game-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5em;
+      font-weight: bold;
+      text-align: center;
+      width: 100%;
+      padding: 20px; /* Augmenté le padding pour un meilleur espacement */
+      background-color: rgba(30, 30, 30, 0.9);
+      border-radius: 5px;
+      display: none; /* Masqué par défaut */
+      z-index: 10;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Style pour le titre "Game Over" */
+    #game-message h2 {
+        font-size: 4em; /* Augmenté la taille pour que ce soit plus visible */
+        color: #e74c3c; /* Rouge pour l'attention */
+        margin-bottom: 5px; /* Réduit l'espace en bas pour le rapprocher du haut */
+        text-shadow: 2px 2px 4px #000; /* Ajout d'une ombre portée pour un meilleur contraste */
+    }
+
+    /* Style pour le score final */
+    #game-message p {
+        font-size: 0.9em; /* Taille plus petite pour le score */
+        margin-bottom: 20px; /* Ajoute un espace en bas pour le séparer du bouton */
+    }
+
+    /* Nouveau style pour le bouton de jeu */
+    .game-button {
+      background-color: #2a2a2a;
+      color: white;
+      border: 2px solid #555;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    .game-button:hover {
+      background-color: #444;
+    }
+
+  </style>
+</head>
+<body>
+  <audio id="background-music" loop>
+    <source src="son (1).mp3" type="audio/mpeg">
+    Votre navigateur ne supporte pas l'élément audio.
+  </audio>
+
+  <div class="card">
+    <img src="https://i.pinimg.com/736x/59/69/11/59691152b357b08b5f8f5e6ed5d7177d.jpg" alt="Photo de profil" class="profile-pic">
+    
+    <div class="pseudo">𝕽𝖔𝖒𝖆𝖎𝖓𝖗𝖌𝖘𝖘</div>
+    
+    <div class="squares-container">
+      <a href="https://www.tiktok.com/@romainrgss" target="_blank" class="square">
+        <i class="fab fa-tiktok"></i>
+      </a>
+      <a href="https://www.instagram.com/romainrgss" target="_blank" class="square">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://open.spotify.com/user/Romainrgss" target="_blank" class="square">
+        <i class="fab fa-spotify"></i>
+      </a>
+    </div>
+
+    <button id="music-toggle-btn" class="music-toggle-button">
+      <span class="icon-container">
+        <i class="fas fa-play"></i>
+      </span>
+      <div class="music-info">
+        <img src="https://i.pinimg.com/736x/26/1f/e2/261fe28a4885d8a8757252d14c070e9d.jpg" alt="Image de l'album" class="music-image">
+        <div class="music-text">
+          <span class="track-name">Exit Music (For a Film)</span>
+          <span class="artist-name">Radiohead</span>
+        </div>
+      </div>
+    </button>
+    
+    <div id="game-container">
+        <canvas id="gameCanvas" style="display: none;"></canvas>
+        <button id="start-button" class="game-button">Commencer</button>
+        <div id="game-message" style="display: none;">
+            <button id="restart-button" class="game-button">Rejouer</button>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    // Attend que le DOM soit complètement chargé
+    document.addEventListener('DOMContentLoaded', () => {
+      const card = document.querySelector('.card');
+      const music = document.getElementById('background-music');
+      const musicToggleBtn = document.getElementById('music-toggle-btn');
+      const musicIcon = musicToggleBtn.querySelector('.icon-container i');
+      
+      // Ajoute la classe 'show' pour déclencher l'animation de la carte
+      setTimeout(() => {
+        card.classList.add('show');
+      }, 100);
+
+      // Met à jour l'état initial du bouton de musique
+      const updateMusicButton = () => {
+        if (music.paused) {
+          musicIcon.classList.remove('fa-pause');
+          musicIcon.classList.add('fa-play');
+        } else {
+          musicIcon.classList.remove('fa-play');
+          musicIcon.classList.add('fa-pause');
+        }
+      };
+
+      // Tente de lancer la musique automatiquement
+      const playPromise = music.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // L'autoplay a fonctionné, met à jour le bouton
+            updateMusicButton();
+            console.log("Autoplay réussi !");
+          })
+          .catch(error => {
+            // L'autoplay a été bloqué, le bouton reste sur l'état "play"
+            console.log("Autoplay bloqué, le bouton de lecture est affiché.");
+            updateMusicButton(); // S'assure que le bouton est dans l'état initial (play)
+          });
+      } else {
+        updateMusicButton();
+      }
+      
+      // Ajoute un écouteur d'événements pour le nouveau bouton de bascule
+      musicToggleBtn.addEventListener('click', () => {
+        if (music.paused) {
+          music.play();
+        } else {
+          music.pause();
+        }
+        // Met à jour l'icône et le texte immédiatement après l'interaction
+        updateMusicButton();
+      });
+      
+      // Écoute les événements 'play' et 'pause' pour synchroniser le bouton
+      music.addEventListener('play', updateMusicButton);
+      music.addEventListener('pause', updateMusicButton);
+
+      // --- Logique pour le mini-jeu du vaisseau spatial ---
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      const gameMessage = document.getElementById('game-message');
+      const startButton = document.getElementById('start-button');
+      const restartButton = document.getElementById('restart-button');
+      
+      let animationFrameId;
+      let player, enemies, bullets;
+      let score, isGameOver;
+      let keys = {};
+      
+      const gameConfig = {
+          // J'ai réduit la vitesse du joueur de 3 à 2 pour diminuer la sensibilité.
+          playerSpeed: 2, 
+          bulletSpeed: 5,
+          enemySpeed: 0.8,
+          enemySpawnRate: 1500, // en millisecondes
+          lastSpawnTime: 0,
+      };
+
+      // Configuration du joueur (plus détaillé pour le pixel art)
+      function createPlayer() {
+          return {
+              x: 20, // Vaisseau sur le bord gauche
+              y: canvas.height / 2, // Position Y initiale au centre
+              width: 20,
+              height: 20,
+              color: 'white',
+              health: 3
+          };
+      }
+
+      // Dessine le joueur avec un style pixel art
+      function drawPlayer() {
+        ctx.fillStyle = '#c0c0c0'; // Gris clair pour le corps
+        // corps du vaisseau
+        ctx.fillRect(player.x - 5, player.y - 5, 20, 10);
+        // ailerons
+        ctx.fillRect(player.x - 10, player.y - 10, 5, 20);
+        // cockpit
+        ctx.fillStyle = '#ffffff'; // Blanc pour le cockpit
+        ctx.fillRect(player.x + 5, player.y - 2.5, 5, 5);
+      }
+      
+
+      // Configuration des ennemis (qui arrivent de droite à gauche)
+      function createEnemy() {
+          const size = 16;
+          return {
+              x: canvas.width, // Commence sur le bord droit
+              y: Math.random() * (canvas.height - size), // Position y aléatoire
+              width: size,
+              height: size,
+              color: 'red',
+              speed: gameConfig.enemySpeed * (Math.random() + 0.5),
+          };
+      }
+
+      // Dessine les ennemis avec un style pixel art
+      function drawEnemies() {
+        enemies.forEach(enemy => {
+            const size = enemy.width;
+            const x = enemy.x;
+            const y = enemy.y;
+            // Corps de l'ennemi
+            ctx.fillStyle = '#a0a0a0'; // Gris pour le corps
+            ctx.fillRect(x, y + size/4, size, size/2);
+            // Tête et pieds
+            ctx.fillRect(x + size/4, y, size/2, size/4);
+            ctx.fillRect(x + size/4, y + size * 3/4, size/2, size/4);
+            // Yeux
+            ctx.fillStyle = '#ffffff'; // Blanc pour les yeux
+            ctx.fillRect(x + size/8, y + size/4, size/8, size/8);
+            ctx.fillRect(x + size * 5/8, y + size/4, size/8, size/8);
+        });
+      }
+
+      // Configuration des balles (qui tirent de gauche à droite)
+      function createBullet() {
+          return {
+              x: player.x + player.width,
+              y: player.y,
+              width: 10,
+              height: 2,
+              color: 'lime',
+          };
+      }
+
+      // Dessine les balles
+      function drawBullets() {
+          ctx.fillStyle = '#8a2be2'; // Un bleu-violet pour les balles
+          bullets.forEach(bullet => {
+              ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+          });
+      }
+
+      // Met à jour la position des éléments
+      function updateGame() {
+          if (isGameOver) return;
+
+          // Met à jour le joueur (déplacement vertical)
+          if ((keys['ArrowUp'] || keys['w'] || keys['z']) && player.y > 0) {
+              player.y -= gameConfig.playerSpeed;
+          }
+          if ((keys['ArrowDown'] || keys['s']) && player.y < canvas.height) {
+              player.y += gameConfig.playerSpeed;
+          }
+
+          // Met à jour les balles (déplacement horizontal de gauche à droite)
+          bullets = bullets.filter(bullet => bullet.x < canvas.width);
+          bullets.forEach(bullet => {
+              bullet.x += gameConfig.bulletSpeed;
+          });
+
+          // Met à jour les ennemis (déplacement de droite à gauche)
+          enemies = enemies.filter(enemy => enemy.x + enemy.width > 0);
+          enemies.forEach(enemy => {
+              enemy.x -= enemy.speed;
+          });
+
+          // Création de nouveaux ennemis
+          const now = Date.now();
+          if (now - gameConfig.lastSpawnTime > gameConfig.enemySpawnRate) {
+              enemies.push(createEnemy());
+              gameConfig.lastSpawnTime = now;
+          }
+
+          // Détection des collisions entre les balles et les ennemis
+          bullets.forEach((bullet, bIndex) => {
+              enemies.forEach((enemy, eIndex) => {
+                  if (
+                      bullet.x < enemy.x + enemy.width &&
+                      bullet.x + bullet.width > enemy.x &&
+                      bullet.y < enemy.y + enemy.height &&
+                      bullet.y + bullet.height > enemy.y
+                  ) {
+                      // Collision !
+                      bullets.splice(bIndex, 1);
+                      enemies.splice(eIndex, 1);
+                      score++;
+                  }
+              });
+          });
+
+          // Détection des collisions entre les ennemis et le joueur
+          enemies.forEach((enemy) => {
+              if (
+                  player.x - player.width / 2 < enemy.x + enemy.width &&
+                  player.x + player.width / 2 > enemy.x &&
+                  player.y - player.height / 2 < enemy.y + enemy.height &&
+                  player.y + player.height / 2 > enemy.y
+              ) {
+                  // Collision !
+                  player.health--;
+                  if (player.health <= 0) {
+                      gameOver();
+                  } else {
+                      // L'ennemi est retiré même si le joueur a de la vie
+                      const enemyIndex = enemies.indexOf(enemy);
+                      if (enemyIndex > -1) {
+                        enemies.splice(enemyIndex, 1);
+                      }
+                  }
+              }
+          });
+      }
+
+      // La boucle principale du jeu
+      function gameLoop() {
+          if (isGameOver) {
+              cancelAnimationFrame(animationFrameId);
+              return;
+          }
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          
+          updateGame();
+          drawPlayer();
+          drawEnemies();
+          drawBullets();
+
+          // Affiche le score et la vie
+          ctx.fillStyle = 'white'; // Blanc pour le texte
+          ctx.font = 'bold 12px monospace';
+          ctx.textAlign = 'left';
+          ctx.fillText(`SCORE ${score}`, 10, 15);
+          ctx.fillText(`VIES ${player.health}`, 10, 30);
+
+          animationFrameId = requestAnimationFrame(gameLoop);
+      }
+
+      // Gère la fin du jeu
+      function gameOver() {
+          isGameOver = true;
+          gameMessage.style.display = 'flex'; // Utilise flexbox pour centrer le contenu
+          canvas.style.display = 'none'; // Masque le canvas
+          cancelAnimationFrame(animationFrameId);
+      }
+
+      // Initialise le jeu
+      function initGame() {
+          // On s'assure que le canvas est visible et qu'il a une taille avant de le dessiner
+          canvas.style.display = 'block';
+          canvas.width = canvas.offsetWidth;
+          canvas.height = canvas.offsetHeight;
+          
+          player = createPlayer();
+          enemies = [];
+          bullets = [];
+          score = 0;
+          isGameOver = false;
+          gameMessage.style.display = 'none';
+          startButton.style.display = 'none'; // Cache le bouton de démarrage
+          gameConfig.lastSpawnTime = Date.now();
+          gameLoop();
+      }
+
+      // Gère les événements clavier
+      document.addEventListener('keydown', (e) => {
+          keys[e.key] = true;
+          if ((e.key === ' ' || e.key === 'a') && !isGameOver) {
+              bullets.push(createBullet());
+          }
+          if (e.key === 'Enter' && isGameOver) {
+              initGame();
+          }
+      });
+      document.addEventListener('keyup', (e) => {
+          keys[e.key] = false;
+      });
+
+      // Gère le redimensionnement de la fenêtre pour que le canvas s'adapte
+      window.addEventListener('resize', () => {
+          if (!isGameOver) {
+             initGame();
+          }
+      });
+
+      // Gère le clic sur le bouton "Commencer"
+      startButton.addEventListener('click', () => {
+          initGame();
+      });
+
+      // Gère le clic sur le bouton "Rejouer"
+      restartButton.addEventListener('click', () => {
+          initGame();
+      });
+    });
+  </script>
+</body>
+</html>
