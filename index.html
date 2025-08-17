@@ -3,233 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boutique en Ligne</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>JOJO INDUSTRIES</title>
+    <!-- Chargement de Tailwind CSS pour le style -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement de la police 'Space Mono' pour le look tech-y -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            font-family: 'Space Mono', monospace;
+            background-color: #121212;
+            color: #E0E0E0;
         }
-        /* Masque toutes les sections de page par défaut */
+        /* Styles pour les effets de lueur néon */
+        .neon-text-green {
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00;
+        }
+        .neon-border-green {
+            border-color: #00ff00;
+            box-shadow: 0 0 5px #00ff00;
+        }
+        .nav-link.nav-active {
+            color: #00ff00;
+        }
+        .nav-link.nav-active svg {
+            stroke: #00ff00;
+        }
+        .product-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer; /* Ajoute un curseur pour indiquer la cliquabilité */
+        }
+        .product-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.2);
+        }
+        /* Cache les pages par défaut */
         .page-content {
             display: none;
         }
+        /* Affiche la page active */
         .page-content.active {
             display: block;
         }
-        /* Ajoute un effet de survol pour les cartes de produits */
-        .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        /* Empêche le clic sur le bouton d'activer le parent */
+        .add-to-cart-btn {
+            pointer-events: auto;
         }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-zinc-900 text-gray-800 dark:text-gray-200">
+<body class="flex items-center justify-center min-h-screen p-2 md:p-4">
 
-    <!-- Conteneur principal pour la vue téléphone -->
-    <div class="max-w-sm mx-auto bg-white dark:bg-zinc-800 shadow-2xl rounded-3xl overflow-hidden mt-4 mb-4">
+    <!-- Conteneur principal (simule l'écran d'un téléphone) -->
+    <div class="w-full max-w-sm h-[80vh] bg-[#1a1a1a] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-gray-700">
 
-        <!-- En-tête de la boutique -->
-        <header class="bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white p-4 shadow-lg flex justify-between items-center">
-            <h1 class="text-2xl font-bold">JOJO INDUSTRIES</h1>
-            <div class="flex items-center space-x-4">
-                <!-- Icône du panier d'achat -->
-                <button id="cart-button" class="relative focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.706.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">0</span>
-                </button>
-            </div>
+        <!-- Barre de titre de l'application -->
+        <header class="bg-[#121212] p-4 text-center border-b border-gray-700">
+            <h1 class="text-xl font-bold neon-text-green">JOJO INDUSTRIES</h1>
         </header>
 
-        <!-- Sections du site (simulant des pages) -->
-        <main class="h-[calc(100vh-12rem)] overflow-y-auto p-4">
+        <!-- Zone de contenu principale -->
+        <main class="flex-1 overflow-y-auto p-4">
 
-            <!-- Page des produits (page d'accueil) -->
+            <!-- Page des produits -->
             <section id="products-page" class="page-content active">
-                <h2 class="text-2xl font-bold mb-4 text-center">Nos Produits</h2>
+                <h2 class="text-lg font-bold text-center mb-6 text-gray-400">Catalogue de Produits</h2>
                 <div id="product-list" class="grid grid-cols-2 gap-4">
-                    <!-- Les produits seront injectés ici par JavaScript -->
+                    <!-- Les produits seront injectés ici par le JS -->
                 </div>
             </section>
 
-            <!-- Page de détails d'un produit -->
+            <!-- Nouvelle page de détail de produit -->
             <section id="product-detail-page" class="page-content">
-                <button id="back-button" class="mb-4 px-4 py-2 bg-gray-200 dark:bg-zinc-700 rounded-full flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span>Retour</span>
-                </button>
-                <div id="product-detail-container" class="space-y-4 text-center">
-                    <!-- Les détails du produit seront injectés ici -->
-                </div>
+                <!-- Les détails du produit seront injectés ici par le JS -->
             </section>
 
-            <!-- Page du panier d'achat -->
+            <!-- Page du Panier -->
             <section id="cart-page" class="page-content">
-                <h2 class="text-2xl font-bold mb-4 text-center">Mon Panier</h2>
+                <h2 class="text-lg font-bold text-center mb-6 text-gray-400">Votre Panier</h2>
                 <div id="cart-items-list" class="space-y-4">
-                    <!-- Les articles du panier seront injectés ici -->
+                    <!-- Les articles du panier seront affichés ici -->
                 </div>
-                <div id="cart-summary" class="mt-6 p-4 rounded-xl bg-gray-50 dark:bg-zinc-700 shadow-md">
-                    <div class="flex justify-between items-center text-lg font-bold">
+                <div class="mt-6 p-4 rounded-lg border border-gray-700 bg-[#222]">
+                    <div class="flex justify-between items-center text-gray-400">
                         <span>Total :</span>
-                        <span id="cart-total">0.00€</span>
+                        <span id="cart-total" class="font-bold text-green-400">0.00 €</span>
                     </div>
                 </div>
-                <button id="checkout-button" class="mt-6 w-full py-3 bg-violet-600 text-white font-semibold rounded-full shadow-lg hover:bg-violet-700 transition-colors">
+                <button id="checkout-button" class="mt-6 w-full py-3 bg-green-500 text-black font-semibold rounded-lg shadow-md hover:bg-green-400 transition-colors">
                     Passer à la Caisse
                 </button>
                 <p id="empty-cart-message" class="text-center mt-8 text-gray-500 hidden">Votre panier est vide.</p>
             </section>
-            
-            <!-- Nouvelle page de profil -->
+
+            <!-- Page de Profil -->
             <section id="profile-page" class="page-content">
-                <button id="profile-back-button" class="mb-4 px-4 py-2 bg-gray-200 dark:bg-zinc-700 rounded-full flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span>Retour</span>
-                </button>
-                <div id="profile-container" class="space-y-4 text-center">
-                    <!-- Le contenu du profil sera affiché ici par JS -->
+                <h2 class="text-lg font-bold text-center mb-6 text-gray-400">Votre Compte</h2>
+                <div id="profile-container" class="p-6 border border-gray-700 rounded-lg">
+                    <!-- Contenu du profil ou formulaire de connexion -->
                 </div>
             </section>
+            
+            <!-- Nouvelle page secrète -->
+            <section id="secret-page" class="page-content">
+                <h2 class="text-lg font-bold text-center mb-6 text-gray-400">Page Secrète</h2>
+                <div class="p-6 border border-gray-700 rounded-lg text-center">
+                    <p class="text-gray-400">Vous avez trouvé la page secrète !</p>
+                    <p class="text-gray-500 text-xs mt-2">Ce contenu sera bientôt mis à jour.</p>
+                </div>
+            </section>
+
+            <!-- Boîte de notification personnalisée -->
+            <div id="custom-alert" class="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg text-xs transition-all duration-300 opacity-0 bg-[#333] border border-gray-600 text-green-400 z-50"></div>
 
         </main>
 
         <!-- Barre de navigation inférieure -->
-        <footer class="bg-gray-200 dark:bg-zinc-700 shadow-inner p-2 border-t border-gray-300 dark:border-zinc-600">
+        <footer class="bg-[#1a1a1a] border-t border-gray-700 p-2">
             <nav>
-                <ul class="flex justify-around items-center text-sm font-medium text-gray-500 dark:text-gray-400">
+                <ul class="flex justify-around items-center text-xs font-bold text-gray-500">
                     <li>
-                        <button id="home-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
+                        <button id="home-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:text-green-400 hover:bg-[#222] transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                             <span>Accueil</span>
                         </button>
                     </li>
                     <li>
-                        <button id="cart-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.706.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
+                        <button id="cart-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:text-green-400 hover:bg-[#222] transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.706.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                             <span>Panier</span>
                         </button>
                     </li>
                     <li>
-                        <button id="profile-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
+                        <button id="profile-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:text-green-400 hover:bg-[#222] transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                             <span>Profil</span>
                         </button>
                     </li>
                 </ul>
             </nav>
         </footer>
-
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Données de produits fictives
             const products = [
-                { id: 1, name: "ASIAT", price: 29.99, image: "https://i.pinimg.com/736x/1e/b5/a1/1eb5a1bfc6415175b865cb86a29cd3af.jpg", description: "POUR JOAQUIN" },
-                { id: 2, name: "SERANO TRES SALE", price: 19.50, image: "https://restofrais.be/images/thumbs/0041758_510.jpeg", description: "JOHAN TROUVE SA SALE" },
-                { id: 3, name: "AK 47", price: 49.99, image: "https://i.pinimg.com/1200x/fd/ac/ac/fdacacb15530026934cef826876c2e6f.jpg", description: "DES CHOSE SOMBRES SE SONT PASSER " },
-                { id: 4, name: "LE TOILETTE", price: 75.00, image: "https://cdn.shopify.com/s/files/1/0240/0257/files/00079109_1800x1800_ad456345-08ad-47d9-a189-42932af76d5f_480x480.webp?v=1723925988", description: "MAIS NAN MICKEY!!!" },
-                { id: 5, name: "PUFF GOUT PAFF", price: 9.99, image: "https://www.evaps.fr/documents/media/images/contenu/randm-cherry-cola.jpg", description: "TQT C BON POUR LA SANTE" },
-                { id: 6, name: "THUNG SAHUR", price: 129.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPnrgczuCdzysMmkHBUVqt6pRLrHhRThf9w&s", description: "THUNG THUNG THUNG THUNG THUNG SAHUR" },
+                { id: 1, name: "ASIAT", price: 29.99, image: "https://i.pinimg.com/736x/1e/b5/a1/1eb5a1bfc6415175b865cb86a29cd3af.jpg", description: "Un incontournable pour tous les connaisseurs. Savourez l'élégance et la profondeur de ses arômes exotiques." },
+                { id: 2, name: "SERANO TRES SALE", price: 19.50, image: "https://restofrais.be/images/thumbs/0041758_510.jpeg", description: "Ce produit exceptionnel est réputé pour sa saveur intense et salée. Parfait pour rehausser n'importe quel plat." },
+                { id: 3, name: "AK 47", price: 49.99, image: "https://i.pinimg.com/1200x/fd/ac/ac/fdacacb15530026934cef826876c2e6f.jpg", description: "Un classique indémodable, fiable et puissant. Design minimaliste, performance maximale." },
+                { id: 4, name: "LE TOILETTE", price: 75.00, image: "https://cdn.shopify.com/s/files/1/0240/0257/files/00079109_1800x1800_ad456345-08ad-47d9-a189-42932af76d5f_480x480.webp?v=1723925988", description: "Un modèle de confort et d'efficacité. Son design futuriste s'intègre parfaitement à n'importe quel espace." },
+                { id: 5, name: "THUNG SAHUR", price: 9.99, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPnrgczuCdzysMmkHBUVqt6pRLrHhRThf9w&s", description: "Un produit original et plein de caractère. Sa texture unique et sa polyvalence en font un choix parfait." },
+                { id: 6, name: "PUFF GOUT PAFF", price: 129.00, image: "https://www.mistersmoke.com/wp-content/uploads/2023/09/puff-vapen-mars-9000.webp", description: "Une innovation en matière de saveur et de design. Léger et pratique, il offre une expérience inoubliable." },
+                { id: 7, name: "PIEDS", price: 89.99, image: "https://www.icp-paris.fr/public/img/big/5Piedplat1jpg_63f75643628e1.jpg", description: "Le confort ultime pour vos pieds. Fabriqués avec des matériaux de haute qualité pour un bien-être durable." },
+                { id: 8, name: "EL MORGEN", price: 54.99, image: "https://thecandyshop.fr/wp-content/uploads/2024/09/pixelcut-export-1.webp", description: "Un mélange de saveurs exquises qui éveille les sens. Un must pour les matinées pleines de vitalité." },
+                { id: 9, name: "PH PREMIUM", price: 349.99, image: "https://paas-file-pro.igv.com/shop/650c5295fce5a57532d23bfd_692x656.png", description: "L'apogée de la technologie. Une performance inégalée dans un boîtier élégant et robuste." },
+                { id: 10, name: "COSTUME PIKACHU", price: 299.99, image: "https://pokemon-laboutique.fr/cdn/shop/products/ZEV.jpg?v=1654933833", description: "Transformez-vous en votre Pokémon préféré. Idéal pour les fêtes, les conventions ou tout simplement pour le plaisir." },
             ];
 
-            let cart = []; // Le panier d'achat, initialement vide
-            let userProfile = null; // Le profil utilisateur, initialement vide
-            let currentPage = "products-page"; // La page actuelle affichée
-
+            // Variables d'état
+            let cart = [];
+            let userProfile = null;
+            
+            // Références des éléments du DOM
             const productListElement = document.getElementById('product-list');
-            const cartCountElement = document.getElementById('cart-count');
+            const productDetailPageElement = document.getElementById('product-detail-page');
             const cartItemsListElement = document.getElementById('cart-items-list');
             const cartTotalElement = document.getElementById('cart-total');
             const emptyCartMessageElement = document.getElementById('empty-cart-message');
             const profileContainerElement = document.getElementById('profile-container');
+            const customAlertElement = document.getElementById('custom-alert');
+            const checkoutButton = document.getElementById('checkout-button');
 
+            // Références des pages et des liens de navigation
             const pages = {
                 'products-page': document.getElementById('products-page'),
                 'product-detail-page': document.getElementById('product-detail-page'),
                 'cart-page': document.getElementById('cart-page'),
-                'profile-page': document.getElementById('profile-page')
+                'profile-page': document.getElementById('profile-page'),
+                'secret-page': document.getElementById('secret-page') // Ajout de la nouvelle page
             };
+            const navLinks = document.querySelectorAll('.nav-link');
 
-            // Fonction pour changer de page
+            /**
+             * Change la page active de l'application.
+             * @param {string} pageId - L'ID de la page à afficher.
+             */
             const showPage = (pageId) => {
+                // Cache toutes les pages
                 for (const id in pages) {
                     pages[id].classList.remove('active');
                 }
+                // Affiche la page demandée
                 pages[pageId].classList.add('active');
-                currentPage = pageId;
+
+                // Met à jour la classe "active" pour le lien de navigation
+                navLinks.forEach(link => {
+                    link.classList.remove('nav-active');
+                    if (link.id.includes(pageId.split('-')[0])) {
+                        link.classList.add('nav-active');
+                    }
+                });
+                
+                // Si la page est le panier, on le met à jour
+                if (pageId === 'cart-page') {
+                    renderCart();
+                } else if (pageId === 'profile-page') {
+                    renderProfile();
+                }
             };
 
-            // Fonction pour mettre à jour le nombre d'articles dans le panier
-            const updateCartCount = () => {
-                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                cartCountElement.textContent = totalItems;
+            /**
+             * Affiche une notification personnalisée en bas de l'écran.
+             * @param {string} message - Le message à afficher.
+             */
+            const showAlert = (message) => {
+                customAlertElement.textContent = message;
+                customAlertElement.classList.remove('hidden', 'opacity-0');
+                customAlertElement.classList.add('opacity-100');
+                setTimeout(() => {
+                    customAlertElement.classList.remove('opacity-100');
+                    customAlertElement.classList.add('opacity-0');
+                    setTimeout(() => {
+                        customAlertElement.classList.add('hidden');
+                    }, 300);
+                }, 2000);
             };
 
-            // Fonction pour rendre la liste des produits
+            /**
+             * Rend la liste des produits dans le catalogue.
+             */
             const renderProducts = () => {
                 productListElement.innerHTML = '';
                 products.forEach(product => {
                     const productCard = document.createElement('div');
-                    productCard.classList.add('product-card', 'bg-white', 'dark:bg-zinc-700', 'p-4', 'rounded-xl', 'shadow-md', 'flex', 'flex-col', 'items-center', 'text-center', 'cursor-pointer', 'transition-transform', 'duration-200');
-                    productCard.innerHTML = `
-                        <img src="${product.image}" alt="${product.name}" class="rounded-lg mb-2">
-                        <h3 class="text-sm font-semibold w-full">${product.name}</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">${product.price.toFixed(2)}€</p>
-                        <button class="add-to-cart-btn px-4 py-2 text-xs bg-violet-500 text-white rounded-full hover:bg-violet-600 transition-colors w-full">Ajouter</button>
-                    `;
-                    // Ajoute un écouteur d'événement pour afficher les détails du produit
-                    productCard.addEventListener('click', (e) => {
-                        // Évite l'événement si le bouton "Ajouter" a été cliqué
-                        if (e.target.classList.contains('add-to-cart-btn')) {
-                            return;
-                        }
-                        renderProductDetail(product);
-                        showPage('product-detail-page');
-                    });
-                    productListElement.appendChild(productCard);
+                    productCard.classList.add('product-card', 'p-2', 'rounded-lg', 'border', 'border-gray-700', 'bg-[#1a1a1a]', 'text-center', 'relative');
+                    
+                    const productImageSrc = product.image;
+                    const placeholderImageUrl = 'https://placehold.co/150x150/1e293b/d1d5db?text=Image';
 
-                    // Ajoute un écouteur d'événement pour le bouton "Ajouter au panier"
-                    productCard.querySelector('.add-to-cart-btn').addEventListener('click', () => {
+                    productCard.innerHTML = `
+                        <img src="${productImageSrc}" alt="${product.name}" class="rounded-lg mb-2 mx-auto w-full h-auto object-cover pointer-events-none" onerror="this.src='${placeholderImageUrl}'">
+                        <h3 class="text-sm font-semibold text-green-400 pointer-events-none">${product.name}</h3>
+                        <p class="text-xs font-bold text-gray-400 pointer-events-none">${product.price.toFixed(2)} €</p>
+                        <button class="add-to-cart-btn px-2 py-1 bg-green-500 text-black text-xs font-semibold rounded-lg shadow-md hover:bg-green-400 transition-colors">
+                            Ajouter
+                        </button>
+                    `;
+                    
+                    // Événement pour l'ajout au panier
+                    const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
+                    addToCartBtn.addEventListener('click', (event) => {
+                        event.stopPropagation(); // Empêche l'événement de se propager au conteneur parent
                         addToCart(product);
                     });
+
+                    // Événement pour la page de détail, sur le reste de la carte
+                    productCard.addEventListener('click', () => {
+                        showProductDetail(product);
+                    });
+
+                    productListElement.appendChild(productCard);
                 });
             };
 
-            // Fonction pour rendre la page de détails d'un produit
-            const renderProductDetail = (product) => {
-                const detailContainer = document.getElementById('product-detail-container');
-                detailContainer.innerHTML = `
-                    <img src="${product.image.replace('150x150', '300x300')}" alt="${product.name}" class="rounded-xl w-full mx-auto shadow-lg mb-4">
-                    <h2 class="text-3xl font-bold">${product.name}</h2>
-                    <p class="text-xl font-semibold text-fuchsia-600">${product.price.toFixed(2)}€</p>
-                    <p class="text-gray-600 dark:text-gray-400">${product.description}</p>
-                    <button id="add-to-cart-detail-btn" class="mt-4 px-6 py-3 bg-violet-600 text-white font-semibold rounded-full shadow-lg hover:bg-violet-700 transition-colors w-full">Ajouter au Panier</button>
+            /**
+             * Affiche la page de détail d'un produit.
+             * @param {object} product - Le produit à afficher.
+             */
+            const showProductDetail = (product) => {
+                productDetailPageElement.innerHTML = `
+                    <button id="back-to-products-btn" class="text-gray-400 hover:text-green-400 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        Retour
+                    </button>
+                    <div class="p-4 bg-[#222] rounded-lg border border-gray-700 text-center">
+                        <img src="${product.image}" alt="${product.name}" class="rounded-lg mb-4 mx-auto w-48 h-48 object-cover" onerror="this.src='https://placehold.co/192x192/1e293b/d1d5db?text=Image'">
+                        <h2 class="text-xl font-bold text-green-400">${product.name}</h2>
+                        <p class="text-lg font-bold text-gray-400 my-2">${product.price.toFixed(2)} €</p>
+                        <p class="text-xs text-gray-500 mb-4">${product.description}</p>
+                        <button id="add-to-cart-detail-btn" class="w-full py-2 bg-green-500 text-black font-semibold rounded-lg shadow-md hover:bg-green-400 transition-colors text-sm">
+                            Ajouter au Panier
+                        </button>
+                    </div>
                 `;
-                // Ajoute l'écouteur d'événement pour le bouton "Ajouter au Panier" sur la page de détail
+                // Ajout des écouteurs pour les nouveaux boutons
+                document.getElementById('back-to-products-btn').addEventListener('click', () => showPage('products-page'));
                 document.getElementById('add-to-cart-detail-btn').addEventListener('click', () => {
                     addToCart(product);
                 });
+                showPage('product-detail-page');
             };
 
-            // Fonction pour ajouter un produit au panier
+            /**
+             * Ajoute un produit au panier ou incrémente sa quantité.
+             * @param {object} product - Le produit à ajouter.
+             */
             const addToCart = (product) => {
                 const existingItem = cart.find(item => item.id === product.id);
                 if (existingItem) {
@@ -237,192 +304,168 @@
                 } else {
                     cart.push({ ...product, quantity: 1 });
                 }
-                updateCartCount();
-                alertMessage('Article ajouté au panier !', 'bg-violet-500');
+                showAlert('Article ajouté : ' + product.name);
             };
 
-            // Fonction pour rendre la page du panier
+            /**
+             * Rend les articles du panier et met à jour le total.
+             */
             const renderCart = () => {
                 cartItemsListElement.innerHTML = '';
                 let total = 0;
                 if (cart.length === 0) {
                     emptyCartMessageElement.classList.remove('hidden');
-                    cartTotalElement.textContent = '0.00€';
+                    checkoutButton.classList.add('hidden');
                 } else {
                     emptyCartMessageElement.classList.add('hidden');
+                    checkoutButton.classList.remove('hidden');
                     cart.forEach(item => {
                         const itemElement = document.createElement('div');
-                        itemElement.classList.add('flex', 'items-center', 'space-x-4', 'p-2', 'rounded-xl', 'bg-gray-50', 'dark:bg-zinc-700', 'shadow-sm');
+                        itemElement.classList.add('flex', 'items-center', 'space-x-4', 'p-3', 'rounded-lg', 'bg-[#222]', 'border', 'border-gray-700');
                         itemElement.innerHTML = `
-                            <img src="${item.image.replace('150x150', '50x50')}" alt="${item.name}" class="rounded-lg w-12 h-12">
+                            <img src="${item.image}" alt="${item.name}" class="rounded-lg w-12 h-12 object-cover" onerror="this.src='https://placehold.co/48x48/1e293b/d1d5db?text=Image'">
                             <div class="flex-1">
-                                <h4 class="font-semibold">${item.name}</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">${item.price.toFixed(2)}€</p>
+                                <h4 class="font-semibold text-green-400">${item.name}</h4>
+                                <p class="text-xs text-gray-500">${item.price.toFixed(2)} €</p>
                             </div>
-                            <div class="flex items-center space-x-2">
-                                <button class="quantity-decrease text-lg font-bold w-6 h-6 rounded-full bg-gray-200 dark:bg-zinc-600">-</button>
+                            <div class="flex items-center space-x-2 text-gray-400">
+                                <button class="quantity-decrease text-lg font-bold w-6 h-6 rounded-full bg-[#333] hover:bg-[#444] transition-colors">-</button>
                                 <span class="font-semibold">${item.quantity}</span>
-                                <button class="quantity-increase text-lg font-bold w-6 h-6 rounded-full bg-gray-200 dark:bg-zinc-600">+</button>
+                                <button class="quantity-increase text-lg font-bold w-6 h-6 rounded-full bg-[#333] hover:bg-[#444] transition-colors">+</button>
                             </div>
                         `;
                         cartItemsListElement.appendChild(itemElement);
 
                         total += item.price * item.quantity;
                         
-                        // Ajoute les écouteurs pour la modification de quantité
+                        // Écouteurs pour la modification de quantité
                         itemElement.querySelector('.quantity-decrease').addEventListener('click', () => {
                             if (item.quantity > 1) {
                                 item.quantity--;
                             } else {
                                 cart = cart.filter(cartItem => cartItem.id !== item.id);
                             }
-                            updateCartCount();
                             renderCart();
                         });
                         itemElement.querySelector('.quantity-increase').addEventListener('click', () => {
                             item.quantity++;
-                            updateCartCount();
                             renderCart();
                         });
                     });
                 }
-                cartTotalElement.textContent = total.toFixed(2) + '€';
+                cartTotalElement.textContent = total.toFixed(2) + ' €';
             };
-            
-            // Fonction pour rendre la page de profil
+
+            /**
+             * Rend la page de profil, affichant le profil de l'utilisateur ou le formulaire de connexion.
+             */
             const renderProfile = () => {
                 profileContainerElement.innerHTML = '';
                 if (userProfile) {
-                    // Si un profil existe, affiche les détails
+                    // Affiche les informations de l'utilisateur
                     profileContainerElement.innerHTML = `
-                        <h2 class="text-2xl font-bold mb-4">Mon Profil</h2>
-                        <img src="${userProfile.photoUrl}" alt="Photo de profil de ${userProfile.name}" class="w-24 h-24 rounded-full mx-auto shadow-lg mb-4">
-                        <p class="text-xl font-semibold">${userProfile.name}</p>
-                        ${userProfile.age ? `<p class="text-md text-gray-500 dark:text-gray-400">Âge : ${userProfile.age} ans</p>` : ''}
-                    `;
-                } else {
-                    // Sinon, affiche le formulaire de création de compte
-                    profileContainerElement.innerHTML = `
-                        <h2 class="text-2xl font-bold mb-6">Créer un Compte</h2>
-                        <form id="create-account-form" class="space-y-4">
-                            <div>
-                                <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom d'utilisateur</label>
-                                <input type="text" id="username" name="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 dark:bg-zinc-700 dark:border-zinc-600 focus:ring-violet-500 focus:border-violet-500" placeholder="Entrez votre nom" required>
-                            </div>
-                            <div>
-                                <label for="age" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Âge</label>
-                                <input type="number" id="age" name="age" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 dark:bg-zinc-700 dark:border-zinc-600 focus:ring-violet-500 focus:border-violet-500" placeholder="Entrez votre âge" required>
-                            </div>
-                            <button type="submit" class="w-full py-2 bg-violet-600 text-white font-semibold rounded-md shadow-lg hover:bg-violet-700 transition-colors">
-                                Créer mon Compte
+                        <div class="space-y-4 text-center">
+                            <img src="https://placehold.co/150x150/00ff00/121212?text=🦕" alt="Avatar Dinosaure" class="w-24 h-24 mx-auto rounded-full mb-4 border-2 border-green-400">
+                            <p class="text-xl font-bold text-green-400">${userProfile.name}</p>
+                            <p class="text-sm text-gray-400">Âge : ${userProfile.age}</p>
+                            <button id="disconnect-btn" class="w-full mt-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                                Se déconnecter
                             </button>
-                        </form>
+                        </div>
+                        <!-- Section pour le code secret -->
+                        <div class="mt-6 space-y-4 p-4 border border-gray-700 rounded-lg bg-[#222]">
+                            <h3 class="text-sm font-bold text-gray-400">Code Secret</h3>
+                            <input type="text" id="code-input" class="w-full bg-[#1a1a1a] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Entrez le code ici">
+                            <button id="enter-code-btn" class="w-full py-2 bg-green-500 text-black font-semibold rounded-md hover:bg-green-400 transition-colors hidden">
+                                Entrer
+                            </button>
+                        </div>
                     `;
-                    // Ajoute un écouteur d'événement pour le formulaire
-                    document.getElementById('create-account-form').addEventListener('submit', handleAccountCreation);
+                    document.getElementById('disconnect-btn').addEventListener('click', () => {
+                        userProfile = null;
+                        renderProfile();
+                        showAlert('Vous avez été déconnecté.');
+                    });
+
+                    // Logique pour le code secret
+                    const codeInput = document.getElementById('code-input');
+                    const enterCodeBtn = document.getElementById('enter-code-btn');
+                    
+                    codeInput.addEventListener('input', () => {
+                        if (codeInput.value === '777') {
+                            enterCodeBtn.classList.remove('hidden');
+                        } else {
+                            enterCodeBtn.classList.add('hidden');
+                        }
+                    });
+
+                    enterCodeBtn.addEventListener('click', () => {
+                        showPage('secret-page');
+                    });
+
+                } else {
+                    // Affiche le formulaire de "connexion"
+                    profileContainerElement.innerHTML = `
+                        <div class="space-y-4">
+                            <h3 class="text-sm font-bold text-center text-gray-400">Créer un compte</h3>
+                            <form id="auth-form" class="space-y-4">
+                                <div>
+                                    <label for="username" class="block text-xs font-medium text-gray-500">Nom d'utilisateur</label>
+                                    <input type="text" id="username" name="username" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Votre nom" required>
+                                </div>
+                                <div>
+                                    <label for="age" class="block text-xs font-medium text-gray-500">Âge</label>
+                                    <input type="number" id="age" name="age" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Votre âge" required>
+                                </div>
+                                <button type="submit" class="w-full py-2 bg-green-500 text-black font-semibold rounded-md hover:bg-green-400 transition-colors">
+                                    Se connecter
+                                </button>
+                            </form>
+                        </div>
+                    `;
+                    document.getElementById('auth-form').addEventListener('submit', handleAuth);
                 }
             };
-            
-            // Fonction pour gérer la création de compte
-            const handleAccountCreation = (event) => {
+
+            /**
+             * Gère la soumission du formulaire de connexion.
+             * @param {Event} event - L'événement de soumission.
+             */
+            const handleAuth = (event) => {
                 event.preventDefault();
-                const usernameInput = document.getElementById('username');
-                const ageInput = document.getElementById('age');
-                const username = usernameInput.value.trim();
-                const age = parseInt(ageInput.value, 10);
+                const username = document.getElementById('username').value.trim();
+                const age = document.getElementById('age').value.trim();
                 
-                if (username && !isNaN(age) && age > 0) {
-                    // Crée le profil utilisateur
-                    const userPhotos = [
-                        "https://placehold.co/100x100/F59E0B/FFFFFF?text=😊",
-                        "https://placehold.co/100x100/10B981/FFFFFF?text=?",
-                        "https://placehold.co/100x100/EF4444/FFFFFF?text=🚀",
-                        "https://placehold.co/100x100/6366F1/FFFFFF?text=🌟"
-                    ];
-                    const randomPhoto = userPhotos[Math.floor(Math.random() * userPhotos.length)];
-                    
+                if (username && age) {
                     userProfile = {
                         name: username,
-                        age: age,
-                        photoUrl: randomPhoto
+                        age: age
                     };
-                    
-                    // Affiche le profil mis à jour
                     renderProfile();
-                    alertMessage('Compte créé avec succès !', 'bg-violet-500');
+                    showAlert(`Bienvenue, ${username} !`);
                 } else {
-                    alertMessage('Veuillez entrer un nom d\'utilisateur et un âge valide.', 'bg-red-500');
+                    showAlert('Veuillez remplir tous les champs.');
                 }
-            };
-
-            // Fonction pour afficher un message temporaire (remplace alert())
-            const alertMessage = (message, bgColor) => {
-                const existingAlert = document.getElementById('custom-alert');
-                if (existingAlert) {
-                    existingAlert.remove();
-                }
-
-                const alertDiv = document.createElement('div');
-                alertDiv.id = 'custom-alert';
-                alertDiv.classList.add('fixed', 'bottom-20', 'left-1/2', 'transform', '-translate-x-1/2', 'p-3', 'rounded-xl', 'text-white', 'text-sm', 'shadow-lg', 'transition-all', 'duration-300', 'opacity-0', bgColor);
-                alertDiv.textContent = message;
-                document.body.appendChild(alertDiv);
-                
-                setTimeout(() => {
-                    alertDiv.style.opacity = '1';
-                }, 10); // Laissez un petit délai pour la transition
-
-                setTimeout(() => {
-                    alertDiv.style.opacity = '0';
-                    setTimeout(() => alertDiv.remove(), 300);
-                }, 2000);
             };
 
             // Gestionnaires d'événements pour la navigation
-            document.getElementById('home-nav-link').addEventListener('click', () => {
-                showPage('products-page');
-            });
-
-            document.getElementById('cart-nav-link').addEventListener('click', () => {
-                renderCart();
-                showPage('cart-page');
-            });
-
-            document.getElementById('cart-button').addEventListener('click', () => {
-                renderCart();
-                showPage('cart-page');
-            });
-
-            document.getElementById('back-button').addEventListener('click', () => {
-                showPage('products-page');
-            });
-
-            document.getElementById('profile-nav-link').addEventListener('click', () => {
-                renderProfile();
-                showPage('profile-page');
-            });
-            
-            document.getElementById('profile-back-button').addEventListener('click', () => {
-                showPage('products-page');
-            });
-
+            document.getElementById('home-nav-link').addEventListener('click', () => showPage('products-page'));
+            document.getElementById('cart-nav-link').addEventListener('click', () => showPage('cart-page'));
+            document.getElementById('profile-nav-link').addEventListener('click', () => showPage('profile-page'));
             document.getElementById('checkout-button').addEventListener('click', () => {
                 if (cart.length > 0) {
-                    alertMessage('Paiement non implémenté. Merci pour votre achat fictif !', 'bg-green-500');
-                    cart = [];
-                    updateCartCount();
-                    renderCart();
+                    showAlert('Transaction en cours... Le paiement n\'est pas fonctionnel pour l\'instant.');
+                    cart = []; // Vide le panier après le "paiement"
+                    showPage('products-page'); // Renvoie l'utilisateur à la page d'accueil
                 } else {
-                     alertMessage('Votre panier est vide !', 'bg-red-500');
+                    showAlert('Votre panier est vide. Impossible de passer à la caisse.');
                 }
             });
 
-            // Initialise le site en affichant la page d'accueil avec les produits
+            // Initialisation de l'application
             renderProducts();
             showPage('products-page');
         });
     </script>
 </body>
 </html>
-
-
