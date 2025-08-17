@@ -58,11 +58,12 @@
 
         <!-- Barre de titre de l'application -->
         <header class="bg-[#121212] p-4 text-center border-b border-gray-700">
-            <h1 class="text-xl font-bold neon-text-green">JOJO INDUSTRIES</h1>
+            <!-- Ajout d'un ID pour pouvoir le modifier via JavaScript -->
+            <h1 id="main-title" class="text-xl font-bold neon-text-green">JOJO INDUSTRIES</h1>
         </header>
 
         <!-- Zone de contenu principale avec défilement interne -->
-        <main class="flex-1 overflow-y-auto p-4">
+        <main id="main-content" class="flex-1 overflow-y-auto p-4">
 
             <!-- Page des produits -->
             <section id="products-page" class="page-content active">
@@ -99,16 +100,28 @@
             <section id="profile-page" class="page-content">
                 <h2 class="text-lg font-bold text-center mb-6 text-gray-400">Votre Compte</h2>
                 <div id="profile-container" class="p-6 border border-gray-700 rounded-lg">
-                    <!-- Contenu du profil ou formulaire de connexion -->
+                    <!-- Contenu du profil, des formulaires ou de l'état de chargement -->
+                    <p id="loading-message" class="text-center text-gray-500">Chargement du profil...</p>
                 </div>
+                <p id="user-id-display" class="text-xs text-gray-600 text-center mt-4 hidden"></p>
             </section>
             
-            <!-- Nouvelle page secrète -->
+            <!-- Page Secrète - Ajout des articles à acheter -->
             <section id="secret-page" class="page-content">
+                <!-- Ajout du bouton de retour au profil -->
+                <button id="back-to-profile-btn" class="text-gray-400 hover:text-green-400 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    Retour au Profil
+                </button>
+                
                 <h2 class="text-lg font-bold text-center mb-6 text-gray-400">Page Secrète</h2>
                 <div class="p-6 border border-gray-700 rounded-lg text-center">
-                    <p class="text-gray-400">Vous avez trouvé la page secrète !</p>
-                    <p class="text-gray-500 text-xs mt-2">Ce contenu sera bientôt mis à jour.</p>
+                    <p class="text-gray-400 mb-4">Vous avez trouvé la page secrète !</p>
+                    <p class="text-gray-500 text-xs mt-2">Ici, vous pouvez acheter des objets rares.</p>
+                </div>
+                <!-- Conteneur pour les articles de la page secrète -->
+                <div id="secret-product-list" class="grid grid-cols-2 gap-4 mt-6">
+                    <!-- Les produits seront injectés ici par le JS -->
                 </div>
             </section>
 
@@ -144,330 +157,523 @@
         </footer>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Données de produits fictives
-            const products = [
-                { id: 1, name: "ASIAT", price: 29.99, image: "https://i.pinimg.com/736x/1e/b5/a1/1eb5a1bfc6415175b865cb86a29cd3af.jpg", description: "POUR JOAQUIN" },
-                { id: 2, name: "SERANO TRES SALE", price: 19.50, image: "https://restofrais.be/images/thumbs/0041758_510.jpeg", description: "JOHAN TROUVE CA TRES SALE" },
-                { id: 3, name: "AK 47", price: 49.99, image: "https://i.pinimg.com/1200x/fd/ac/ac/fdacacb15530026934cef826876c2e6f.jpg", description: "DES CHOSES SOMBRES SE SONT PASSER" },
-                { id: 4, name: "LE TOILETTE", price: 75.00, image: "https://cdn.shopify.com/s/files/1/0240/0257/files/00079109_1800x1800_ad456345-08ad-47d9-a189-42932af76d5f_480x480.webp?v=1723925988", description: "MAIS NON MICKEY" },
-                { id: 5, name: "THUNG SAHUR", price: 9.99, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPnrgczuCdzysMmkHBUVqt6pRLrHhRThf9w&s", description: "THUNG THUNG THUNG THUNG THUNG SAHUR" },
-                { id: 6, name: "PUFF GOUT PAFF", price: 129.00, image: "https://www.mistersmoke.com/wp-content/uploads/2023/09/puff-vapen-mars-9000.webp", description: "TQT C BON POUR LA SANTE" },
-                { id: 7, name: "PIEDS", price: 89.99, image: "https://www.icp-paris.fr/public/img/big/5Piedplat1jpg_63f75643628e1.jpg", description: "MMMMMH" },
-                { id: 8, name: "EL MORGEN", price: 54.99, image: "https://thecandyshop.fr/wp-content/uploads/2024/09/pixelcut-export-1.webp", description: "ENCORE MIEUX AVEC DES PIEDS" },
-                { id: 9, name: "PH PREMIUM", price: 349.99, image: "https://paas-file-pro.igv.com/shop/650c5295fce5a57532d23bfd_692x656.png", description: "LE REVE DE TOUT HOMMES" },
-                { id: 10, name: "COSTUME PIKACHU", price: 299.99, image: "https://pokemon-laboutique.fr/cdn/shop/products/ZEV.jpg?v=1654933833", description: "DARK PIKACHU" },
-            ];
+    <script type="module">
+        // Importation des modules Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-            // Variables d'état
-            let cart = [];
-            let userProfile = null;
-            
-            // Références des éléments du DOM
-            const productListElement = document.getElementById('product-list');
-            const productDetailPageElement = document.getElementById('product-detail-page');
-            const cartItemsListElement = document.getElementById('cart-items-list');
-            const cartTotalElement = document.getElementById('cart-total');
-            const emptyCartMessageElement = document.getElementById('empty-cart-message');
-            const profileContainerElement = document.getElementById('profile-container');
-            const customAlertElement = document.getElementById('custom-alert');
-            const checkoutButton = document.getElementById('checkout-button');
+        // Initialisation de Firebase avec les variables globales fournies
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-            // Références des pages et des liens de navigation
-            const pages = {
-                'products-page': document.getElementById('products-page'),
-                'product-detail-page': document.getElementById('product-detail-page'),
-                'cart-page': document.getElementById('cart-page'),
-                'profile-page': document.getElementById('profile-page'),
-                'secret-page': document.getElementById('secret-page') // Ajout de la nouvelle page
-            };
-            const navLinks = document.querySelectorAll('.nav-link');
+        let app, auth, db;
+        let userProfile = null;
+        let userId = null;
 
-            /**
-             * Change la page active de l'application.
-             * @param {string} pageId - L'ID de la page à afficher.
-             */
-            const showPage = (pageId) => {
-                // Cache toutes les pages
-                for (const id in pages) {
-                    pages[id].classList.remove('active');
+        // Données de produits fictives
+        const products = [
+            { id: 1, name: "ASIAT", price: 29.99, image: "https://i.pinimg.com/736x/1e/b5/a1/1eb5a1bfc6415175b865cb86a29cd3af.jpg", description: "Un incontournable pour tous les connaisseurs. Savourez l'élégance et la profondeur de ses arômes exotiques." },
+            { id: 2, name: "SERANO TRES SALE", price: 19.50, image: "https://restofrais.be/images/thumbs/0041758_510.jpeg", description: "Ce produit exceptionnel est réputé pour sa saveur intense et salée. Parfait pour rehausser n'importe quel plat." },
+            { id: 3, name: "AK 47", price: 49.99, image: "https://i.pinimg.com/1200x/fd/ac/ac/fdacacb15530026934cef826876c2e6f.jpg", description: "Un classique indémodable, fiable et puissant. Design minimaliste, performance maximale." },
+            { id: 4, name: "LE TOILETTE", price: 75.00, image: "https://cdn.shopify.com/s/files/1/0240/0257/files/00079109_1800x1800_ad456345-08ad-47d9-a189-42932af76d5f_480x480.webp?v=1723925988", description: "Un modèle de confort et d'efficacité. Son design futuriste s'intègre parfaitement à n'importe quel espace." },
+            { id: 5, name: "THUNG SAHUR", price: 9.99, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPnrgczuCdzysMmkHBUVqt6pRLrHhRThf9w&s", description: "Un produit original et plein de caractère. Sa texture unique et sa polyvalence en font un choix parfait." },
+            { id: 6, name: "PUFF GOUT PAFF", price: 129.00, image: "https://www.mistersmoke.com/wp-content/uploads/2023/09/puff-vapen-mars-9000.webp", description: "Une innovation en matière de saveur et de design. Léger et pratique, il offre une expérience inoubliable." },
+            { id: 7, name: "PIEDS", price: 89.99, image: "https://www.icp-paris.fr/public/img/big/5Piedplat1jpg_63f75643628e1.jpg", description: "Le confort ultime pour vos pieds. Fabriqués avec des matériaux de haute qualité pour un bien-être durable." },
+            { id: 8, name: "EL MORGEN", price: 54.99, image: "https://thecandyshop.fr/wp-content/uploads/2024/09/pixelcut-export-1.webp", description: "Un mélange de saveurs exquises qui éveille les sens. Un must pour les matinées pleines de vitalité." },
+            { id: 9, name: "PH PREMIUM", price: 349.99, image: "https://paas-file-pro.igv.com/shop/650c5295fce5a57532d23bfd_692x656.png", description: "L'apogée de la technologie. Une performance inégalée dans un boîtier élégant et robuste." },
+            { id: 10, name: "COSTUME PIKACHU", price: 299.99, image: "https://pokemon-laboutique.fr/cdn/shop/products/ZEV.jpg?v=1654933833", description: "Transformez-vous en votre Pokémon préféré. Idéal pour les fêtes, les conventions ou tout simplement pour le plaisir." },
+        ];
+        
+        // Nouvelle liste de produits pour la page secrète (vides)
+        const secretProducts = [
+            { id: 11, name: "???", price: 999.99, image: "https://placehold.co/150x150/1e293b/d1d5db?text=Secret", description: "Ce produit mystérieux est si rare qu'il n'a pas encore de description." },
+            { id: 12, name: "...", price: 1500.00, image: "https://placehold.co/150x150/1e293b/d1d5db?text=Secret", description: "Un article qui transcende la réalité. Son existence est un secret." },
+            { id: 13, name: "???", price: 777.77, image: "https://placehold.co/150x150/1e293b/d1d5db?text=Secret", description: "Un objet d'un autre monde, aux propriétés inconnues." },
+            { id: 14, name: "...", price: 2500.00, image: "https://placehold.co/150x150/1e293b/d1d5db?text=Secret", description: "Un pouvoir indicible est caché à l'intérieur de cet objet." },
+        ];
+
+        // Variables d'état pour la logique de l'application
+        let cart = [];
+        let lastScrollPosition = 0; // Variable pour mémoriser la position de défilement
+        let lastPageId = 'products-page'; // Ajout d'une variable pour la page précédente
+
+        // Références des éléments du DOM
+        const productListElement = document.getElementById('product-list');
+        const productDetailPageElement = document.getElementById('product-detail-page');
+        const cartItemsListElement = document.getElementById('cart-items-list');
+        const cartTotalElement = document.getElementById('cart-total');
+        const emptyCartMessageElement = document.getElementById('empty-cart-message');
+        const profileContainerElement = document.getElementById('profile-container');
+        const customAlertElement = document.getElementById('custom-alert');
+        const checkoutButton = document.getElementById('checkout-button');
+        const mainTitleElement = document.getElementById('main-title'); // Référence au titre principal
+        const secretProductListElement = document.getElementById('secret-product-list'); // Référence à la liste de produits de la page secrète
+        const mainContentElement = document.getElementById('main-content'); // Ajout d'un ID pour le conteneur de défilement
+        const userIdDisplayElement = document.getElementById('user-id-display');
+
+        // Références des pages et des liens de navigation
+        const pages = {
+            'products-page': document.getElementById('products-page'),
+            'product-detail-page': document.getElementById('product-detail-page'),
+            'cart-page': document.getElementById('cart-page'),
+            'profile-page': document.getElementById('profile-page'),
+            'secret-page': document.getElementById('secret-page') // Ajout de la nouvelle page
+        };
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        /**
+         * Change la page active de l'application.
+         * @param {string} pageId - L'ID de la page à afficher.
+         */
+        const showPage = (pageId) => {
+            // Sauvegarde la position de défilement si on quitte la page des produits
+            if (pages['products-page'].classList.contains('active')) {
+                lastScrollPosition = mainContentElement.scrollTop;
+            }
+
+            // Cache toutes les pages
+            for (const id in pages) {
+                pages[id].classList.remove('active');
+            }
+            // Affiche la page demandée
+            pages[pageId].classList.add('active');
+
+            // Met à jour la classe "active" pour le lien de navigation
+            navLinks.forEach(link => {
+                link.classList.remove('nav-active');
+                if (link.id.includes(pageId.split('-')[0])) {
+                    link.classList.add('nav-active');
                 }
-                // Affiche la page demandée
-                pages[pageId].classList.add('active');
-
-                // Met à jour la classe "active" pour le lien de navigation
-                navLinks.forEach(link => {
-                    link.classList.remove('nav-active');
-                    if (link.id.includes(pageId.split('-')[0])) {
-                        link.classList.add('nav-active');
-                    }
-                });
-                
-                // Si la page est le panier, on le met à jour
+            });
+            
+            // Gère le titre principal et les pages spécifiques
+            if (pageId === 'secret-page') {
+                mainTitleElement.textContent = "DARK JOJO INDUSTRIES";
+                // Affiche les produits VIDES sur la page secrète
+                renderProductsInDiv(secretProductListElement, secretProducts, 'secret-page'); 
+            } else {
+                mainTitleElement.textContent = "JOJO INDUSTRIES";
                 if (pageId === 'cart-page') {
                     renderCart();
                 } else if (pageId === 'profile-page') {
                     renderProfile();
                 }
-            };
+            }
+            
+            // Rétablit la position de défilement si nous revenons à la page des produits
+            if (pageId === 'products-page' && lastScrollPosition > 0) {
+                mainContentElement.scrollTop = lastScrollPosition;
+                lastScrollPosition = 0; // Réinitialise la position pour la prochaine fois
+            }
+        };
 
-            /**
-             * Affiche une notification personnalisée en bas de l'écran.
-             * @param {string} message - Le message à afficher.
-             */
-            const showAlert = (message) => {
-                customAlertElement.textContent = message;
-                customAlertElement.classList.remove('hidden', 'opacity-0');
-                customAlertElement.classList.add('opacity-100');
+        /**
+         * Affiche une notification personnalisée en bas de l'écran.
+         * @param {string} message - Le message à afficher.
+         */
+        const showAlert = (message) => {
+            customAlertElement.textContent = message;
+            customAlertElement.classList.remove('hidden', 'opacity-0');
+            customAlertElement.classList.add('opacity-100');
+            setTimeout(() => {
+                customAlertElement.classList.remove('opacity-100');
+                customAlertElement.classList.add('opacity-0');
                 setTimeout(() => {
-                    customAlertElement.classList.remove('opacity-100');
-                    customAlertElement.classList.add('opacity-0');
-                    setTimeout(() => {
-                        customAlertElement.classList.add('hidden');
-                    }, 300);
-                }, 2000);
-            };
+                    customAlertElement.classList.add('hidden');
+                }, 300);
+            }, 2000);
+        };
 
-            /**
-             * Rend la liste des produits dans le catalogue.
-             */
-            const renderProducts = () => {
-                productListElement.innerHTML = '';
-                products.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.classList.add('product-card', 'p-2', 'rounded-lg', 'border', 'border-gray-700', 'bg-[#1a1a1a]', 'text-center', 'relative');
-                    
-                    const productImageSrc = product.image;
-                    const placeholderImageUrl = 'https://placehold.co/150x150/1e293b/d1d5db?text=Image';
+        /**
+         * Rend la liste des produits dans un conteneur spécifié.
+         * @param {HTMLElement} targetDiv - La div où rendre les produits.
+         * @param {Array} productList - La liste des produits à afficher.
+         * @param {string} originPage - L'ID de la page d'où proviennent les produits.
+         */
+        const renderProductsInDiv = (targetDiv, productList, originPage) => {
+            targetDiv.innerHTML = '';
+            productList.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card', 'p-2', 'rounded-lg', 'border', 'border-gray-700', 'bg-[#1a1a1a]', 'text-center', 'relative');
+                
+                const productImageSrc = product.image;
+                const placeholderImageUrl = 'https://placehold.co/150x150/1e293b/d1d5db?text=Image';
 
-                    productCard.innerHTML = `
-                        <img src="${productImageSrc}" alt="${product.name}" class="rounded-lg mb-2 mx-auto w-full h-auto object-cover pointer-events-none" onerror="this.src='${placeholderImageUrl}'">
-                        <h3 class="text-sm font-semibold text-green-400 pointer-events-none">${product.name}</h3>
-                        <p class="text-xs font-bold text-gray-400 pointer-events-none">${product.price.toFixed(2)} €</p>
-                        <button class="add-to-cart-btn px-2 py-1 bg-green-500 text-black text-xs font-semibold rounded-lg shadow-md hover:bg-green-400 transition-colors">
-                            Ajouter
-                        </button>
-                    `;
-                    
-                    // Événement pour l'ajout au panier
-                    const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
-                    addToCartBtn.addEventListener('click', (event) => {
-                        event.stopPropagation(); // Empêche l'événement de se propager au conteneur parent
-                        addToCart(product);
-                    });
-
-                    // Événement pour la page de détail, sur le reste de la carte
-                    productCard.addEventListener('click', () => {
-                        showProductDetail(product);
-                    });
-
-                    productListElement.appendChild(productCard);
-                });
-            };
-
-            /**
-             * Affiche la page de détail d'un produit.
-             * @param {object} product - Le produit à afficher.
-             */
-            const showProductDetail = (product) => {
-                productDetailPageElement.innerHTML = `
-                    <button id="back-to-products-btn" class="text-gray-400 hover:text-green-400 mb-4 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                        Retour
+                productCard.innerHTML = `
+                    <img src="${productImageSrc}" alt="${product.name}" class="rounded-lg mb-2 mx-auto w-full h-auto object-cover pointer-events-none" onerror="this.src='${placeholderImageUrl}'">
+                    <h3 class="text-sm font-semibold text-green-400 pointer-events-none">${product.name}</h3>
+                    <p class="text-xs font-bold text-gray-400 pointer-events-none">${product.price.toFixed(2)} €</p>
+                    <button class="add-to-cart-btn px-2 py-1 bg-green-500 text-black text-xs font-semibold rounded-lg shadow-md hover:bg-green-400 transition-colors">
+                        Ajouter
                     </button>
-                    <div class="p-4 bg-[#222] rounded-lg border border-gray-700 text-center">
-                        <img src="${product.image}" alt="${product.name}" class="rounded-lg mb-4 mx-auto w-48 h-48 object-cover" onerror="this.src='https://placehold.co/192x192/1e293b/d1d5db?text=Image'">
-                        <h2 class="text-xl font-bold text-green-400">${product.name}</h2>
-                        <p class="text-lg font-bold text-gray-400 my-2">${product.price.toFixed(2)} €</p>
-                        <p class="text-xs text-gray-500 mb-4">${product.description}</p>
-                        <button id="add-to-cart-detail-btn" class="w-full py-2 bg-green-500 text-black font-semibold rounded-lg shadow-md hover:bg-green-400 transition-colors text-sm">
-                            Ajouter au Panier
+                `;
+                
+                // Événement pour l'ajout au panier
+                const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
+                addToCartBtn.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Empêche l'événement de se propager au conteneur parent
+                    addToCart(product);
+                });
+
+                // Événement pour la page de détail, sur le reste de la carte
+                productCard.addEventListener('click', () => {
+                    // Passe l'ID de la page d'origine
+                    showProductDetail(product, originPage);
+                });
+
+                targetDiv.appendChild(productCard);
+            });
+        };
+
+        /**
+         * Affiche la page de détail d'un produit.
+         * @param {object} product - Le produit à afficher.
+         * @param {string} originPageId - L'ID de la page d'où l'utilisateur vient.
+         */
+        const showProductDetail = (product, originPageId) => {
+            // Sauvegarde la page d'origine
+            lastPageId = originPageId;
+
+            const backButtonText = (originPageId === 'secret-page') ? 'Retour à la page secrète' : 'Retour au catalogue';
+
+            productDetailPageElement.innerHTML = `
+                <button id="back-to-previous-page-btn" class="text-gray-400 hover:text-green-400 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    ${backButtonText}
+                </button>
+                <div class="p-4 bg-[#222] rounded-lg border border-gray-700 text-center">
+                    <img src="${product.image}" alt="${product.name}" class="rounded-lg mb-4 mx-auto w-48 h-48 object-cover" onerror="this.src='https://placehold.co/192x192/1e293b/d1d5db?text=Image'">
+                    <h2 class="text-xl font-bold text-green-400">${product.name}</h2>
+                    <p class="text-lg font-bold text-gray-400 my-2">${product.price.toFixed(2)} €</p>
+                    <p class="text-xs text-gray-500 mb-4">${product.description}</p>
+                    <button id="add-to-cart-detail-btn" class="w-full py-2 bg-green-500 text-black font-semibold rounded-lg shadow-md hover:bg-green-400 transition-colors text-sm">
+                        Ajouter au Panier
+                    </button>
+                </div>
+            `;
+            // Ajout des écouteurs pour les nouveaux boutons
+            document.getElementById('back-to-previous-page-btn').addEventListener('click', () => showPage(lastPageId));
+            document.getElementById('add-to-cart-detail-btn').addEventListener('click', () => {
+                addToCart(product);
+            });
+            showPage('product-detail-page');
+        };
+
+        /**
+         * Ajoute un produit au panier ou incrémente sa quantité.
+         * @param {object} product - Le produit à ajouter.
+         */
+        const addToCart = (product) => {
+            const existingItem = cart.find(item => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            showAlert('Article ajouté : ' + product.name);
+        };
+
+        /**
+         * Rend les articles du panier et met à jour le total.
+         */
+        const renderCart = () => {
+            cartItemsListElement.innerHTML = '';
+            let total = 0;
+            if (cart.length === 0) {
+                emptyCartMessageElement.classList.remove('hidden');
+                checkoutButton.classList.add('hidden');
+            } else {
+                emptyCartMessageElement.classList.add('hidden');
+                checkoutButton.classList.remove('hidden');
+                cart.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add('flex', 'items-center', 'space-x-4', 'p-3', 'rounded-lg', 'bg-[#222]', 'border', 'border-gray-700');
+                    itemElement.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="rounded-lg w-12 h-12 object-cover" onerror="this.src='https://placehold.co/48x48/1e293b/d1d5db?text=Image'">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-green-400">${item.name}</h4>
+                            <p class="text-xs text-gray-500">${item.price.toFixed(2)} €</p>
+                        </div>
+                        <div class="flex items-center space-x-2 text-gray-400">
+                            <button class="quantity-decrease text-lg font-bold w-6 h-6 rounded-full bg-[#333] hover:bg-[#444] transition-colors">-</button>
+                            <span class="font-semibold">${item.quantity}</span>
+                            <button class="quantity-increase text-lg font-bold w-6 h-6 rounded-full bg-[#333] hover:bg-[#444] transition-colors">+</button>
+                        </div>
+                    `;
+                    cartItemsListElement.appendChild(itemElement);
+
+                    total += item.price * item.quantity;
+                    
+                    // Écouteurs pour la modification de quantité
+                    itemElement.querySelector('.quantity-decrease').addEventListener('click', () => {
+                        if (item.quantity > 1) {
+                            item.quantity--;
+                        } else {
+                            cart = cart.filter(cartItem => cartItem.id !== item.id);
+                        }
+                        renderCart();
+                    });
+                    itemElement.querySelector('.quantity-increase').addEventListener('click', () => {
+                        item.quantity++;
+                        renderCart();
+                    });
+                });
+            }
+            cartTotalElement.textContent = total.toFixed(2) + ' €';
+        };
+
+        /**
+         * Rend la page de profil, affichant le profil de l'utilisateur ou les formulaires d'authentification.
+         */
+        const renderProfile = () => {
+            profileContainerElement.innerHTML = '';
+            const user = auth.currentUser;
+            if (user) {
+                // L'utilisateur est connecté, affichons le profil
+                profileContainerElement.innerHTML = `
+                    <div class="space-y-4 text-center">
+                        <img src="https://placehold.co/150x150/00ff00/121212?text=🦕" alt="Avatar Dinosaure" class="w-24 h-24 mx-auto rounded-full mb-4 border-2 border-green-400">
+                        <p class="text-xl font-bold text-green-400">${userProfile ? userProfile.name : 'Utilisateur'}</p>
+                        <p class="text-sm text-gray-400">${user.email}</p>
+                        <button id="disconnect-btn" class="w-full mt-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                            Se déconnecter
+                        </button>
+                    </div>
+                    <!-- Section pour le code secret -->
+                    <div class="mt-6 space-y-4 p-4 border border-gray-700 rounded-lg bg-[#222]">
+                        <h3 class="text-sm font-bold text-gray-400">Code Secret</h3>
+                        <input type="text" id="code-input" class="w-full bg-[#1a1a1a] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Entrez le code ici">
+                        <button id="enter-code-btn" class="w-full py-2 bg-green-500 text-black font-semibold rounded-md hover:bg-green-400 transition-colors hidden">
+                            Entrer
                         </button>
                     </div>
                 `;
-                // Ajout des écouteurs pour les nouveaux boutons
-                document.getElementById('back-to-products-btn').addEventListener('click', () => showPage('products-page'));
-                document.getElementById('add-to-cart-detail-btn').addEventListener('click', () => {
-                    addToCart(product);
+                document.getElementById('disconnect-btn').addEventListener('click', handleSignOut);
+
+                // Logique pour le code secret
+                const codeInput = document.getElementById('code-input');
+                const enterCodeBtn = document.getElementById('enter-code-btn');
+                
+                codeInput.addEventListener('input', () => {
+                    if (codeInput.value === '777') {
+                        enterCodeBtn.classList.remove('hidden');
+                    } else {
+                        enterCodeBtn.classList.add('hidden');
+                    }
                 });
-                showPage('product-detail-page');
-            };
 
-            /**
-             * Ajoute un produit au panier ou incrémente sa quantité.
-             * @param {object} product - Le produit à ajouter.
-             */
-            const addToCart = (product) => {
-                const existingItem = cart.find(item => item.id === product.id);
-                if (existingItem) {
-                    existingItem.quantity++;
-                } else {
-                    cart.push({ ...product, quantity: 1 });
-                }
-                showAlert('Article ajouté : ' + product.name);
-            };
+                enterCodeBtn.addEventListener('click', () => {
+                    showPage('secret-page');
+                });
+                userIdDisplayElement.textContent = `ID utilisateur: ${userId}`;
+                userIdDisplayElement.classList.remove('hidden');
 
-            /**
-             * Rend les articles du panier et met à jour le total.
-             */
-            const renderCart = () => {
-                cartItemsListElement.innerHTML = '';
-                let total = 0;
-                if (cart.length === 0) {
-                    emptyCartMessageElement.classList.remove('hidden');
-                    checkoutButton.classList.add('hidden');
-                } else {
-                    emptyCartMessageElement.classList.add('hidden');
-                    checkoutButton.classList.remove('hidden');
-                    cart.forEach(item => {
-                        const itemElement = document.createElement('div');
-                        itemElement.classList.add('flex', 'items-center', 'space-x-4', 'p-3', 'rounded-lg', 'bg-[#222]', 'border', 'border-gray-700');
-                        itemElement.innerHTML = `
-                            <img src="${item.image}" alt="${item.name}" class="rounded-lg w-12 h-12 object-cover" onerror="this.src='https://placehold.co/48x48/1e293b/d1d5db?text=Image'">
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-green-400">${item.name}</h4>
-                                <p class="text-xs text-gray-500">${item.price.toFixed(2)} €</p>
-                            </div>
-                            <div class="flex items-center space-x-2 text-gray-400">
-                                <button class="quantity-decrease text-lg font-bold w-6 h-6 rounded-full bg-[#333] hover:bg-[#444] transition-colors">-</button>
-                                <span class="font-semibold">${item.quantity}</span>
-                                <button class="quantity-increase text-lg font-bold w-6 h-6 rounded-full bg-[#333] hover:bg-[#444] transition-colors">+</button>
-                            </div>
-                        `;
-                        cartItemsListElement.appendChild(itemElement);
-
-                        total += item.price * item.quantity;
-                        
-                        // Écouteurs pour la modification de quantité
-                        itemElement.querySelector('.quantity-decrease').addEventListener('click', () => {
-                            if (item.quantity > 1) {
-                                item.quantity--;
-                            } else {
-                                cart = cart.filter(cartItem => cartItem.id !== item.id);
-                            }
-                            renderCart();
-                        });
-                        itemElement.querySelector('.quantity-increase').addEventListener('click', () => {
-                            item.quantity++;
-                            renderCart();
-                        });
-                    });
-                }
-                cartTotalElement.textContent = total.toFixed(2) + ' €';
-            };
-
-            /**
-             * Rend la page de profil, affichant le profil de l'utilisateur ou le formulaire de connexion.
-             */
-            const renderProfile = () => {
-                profileContainerElement.innerHTML = '';
-                if (userProfile) {
-                    // Affiche les informations de l'utilisateur
-                    profileContainerElement.innerHTML = `
-                        <div class="space-y-4 text-center">
-                            <img src="https://placehold.co/150x150/00ff00/121212?text=🦕" alt="Avatar Dinosaure" class="w-24 h-24 mx-auto rounded-full mb-4 border-2 border-green-400">
-                            <p class="text-xl font-bold text-green-400">${userProfile.name}</p>
-                            <p class="text-sm text-gray-400">Âge : ${userProfile.age}</p>
-                            <button id="disconnect-btn" class="w-full mt-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-                                Se déconnecter
-                            </button>
-                        </div>
-                        <!-- Section pour le code secret -->
-                        <div class="mt-6 space-y-4 p-4 border border-gray-700 rounded-lg bg-[#222]">
-                            <h3 class="text-sm font-bold text-gray-400">Code Secret</h3>
-                            <input type="text" id="code-input" class="w-full bg-[#1a1a1a] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Entrez le code ici">
-                            <button id="enter-code-btn" class="w-full py-2 bg-green-500 text-black font-semibold rounded-md hover:bg-green-400 transition-colors hidden">
-                                Entrer
-                            </button>
-                        </div>
-                    `;
-                    document.getElementById('disconnect-btn').addEventListener('click', () => {
-                        userProfile = null;
-                        renderProfile();
-                        showAlert('Vous avez été déconnecté.');
-                    });
-
-                    // Logique pour le code secret
-                    const codeInput = document.getElementById('code-input');
-                    const enterCodeBtn = document.getElementById('enter-code-btn');
-                    
-                    codeInput.addEventListener('input', () => {
-                        if (codeInput.value === '777') {
-                            enterCodeBtn.classList.remove('hidden');
-                        } else {
-                            enterCodeBtn.classList.add('hidden');
-                        }
-                    });
-
-                    enterCodeBtn.addEventListener('click', () => {
-                        showPage('secret-page');
-                    });
-
-                } else {
-                    // Affiche le formulaire de "connexion"
-                    profileContainerElement.innerHTML = `
-                        <div class="space-y-4">
-                            <h3 class="text-sm font-bold text-center text-gray-400">Créer un compte</h3>
-                            <form id="auth-form" class="space-y-4">
+            } else {
+                // L'utilisateur n'est pas connecté, affichons les formulaires de connexion/inscription
+                profileContainerElement.innerHTML = `
+                    <div id="auth-forms-container" class="space-y-4">
+                        <div id="signin-form-wrapper">
+                            <h3 class="text-sm font-bold text-center text-gray-400">Se connecter</h3>
+                            <form id="signin-form" class="space-y-4 mt-4">
                                 <div>
-                                    <label for="username" class="block text-xs font-medium text-gray-500">Nom d'utilisateur</label>
-                                    <input type="text" id="username" name="username" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Votre nom" required>
+                                    <label for="signin-email" class="block text-xs font-medium text-gray-500">Email</label>
+                                    <input type="email" id="signin-email" name="email" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="votre@email.com" required>
                                 </div>
                                 <div>
-                                    <label for="age" class="block text-xs font-medium text-gray-500">Âge</label>
-                                    <input type="number" id="age" name="age" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Votre âge" required>
+                                    <label for="signin-password" class="block text-xs font-medium text-gray-500">Mot de passe</label>
+                                    <input type="password" id="signin-password" name="password" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="********" required>
                                 </div>
                                 <button type="submit" class="w-full py-2 bg-green-500 text-black font-semibold rounded-md hover:bg-green-400 transition-colors">
                                     Se connecter
                                 </button>
                             </form>
+                            <p class="text-center text-xs text-gray-500 mt-4">
+                                Pas encore de compte ? 
+                                <button id="show-signup-btn" class="text-green-400 hover:text-green-200">Créer un compte</button>
+                            </p>
                         </div>
-                    `;
-                    document.getElementById('auth-form').addEventListener('submit', handleAuth);
-                }
-            };
+                        <div id="signup-form-wrapper" class="hidden">
+                            <h3 class="text-sm font-bold text-center text-gray-400">Créer un compte</h3>
+                            <form id="signup-form" class="space-y-4 mt-4">
+                                <div>
+                                    <label for="signup-username" class="block text-xs font-medium text-gray-500">Nom d'utilisateur</label>
+                                    <input type="text" id="signup-username" name="username" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="Votre pseudo" required>
+                                </div>
+                                <div>
+                                    <label for="signup-email" class="block text-xs font-medium text-gray-500">Email</label>
+                                    <input type="email" id="signup-email" name="email" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="votre@email.com" required>
+                                </div>
+                                <div>
+                                    <label for="signup-password" class="block text-xs font-medium text-gray-500">Mot de passe</label>
+                                    <input type="password" id="signup-password" name="password" class="mt-1 block w-full bg-[#222] border border-gray-600 text-green-400 p-2 text-sm rounded-md" placeholder="********" required>
+                                </div>
+                                <button type="submit" class="w-full py-2 bg-green-500 text-black font-semibold rounded-md hover:bg-green-400 transition-colors">
+                                    Créer le compte
+                                </button>
+                            </form>
+                            <p class="text-center text-xs text-gray-500 mt-4">
+                                Déjà un compte ? 
+                                <button id="show-signin-btn" class="text-green-400 hover:text-green-200">Se connecter</button>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('signin-form').addEventListener('submit', handleSignIn);
+                document.getElementById('signup-form').addEventListener('submit', handleSignUp);
+                document.getElementById('show-signup-btn').addEventListener('click', () => {
+                    document.getElementById('signin-form-wrapper').classList.add('hidden');
+                    document.getElementById('signup-form-wrapper').classList.remove('hidden');
+                });
+                document.getElementById('show-signin-btn').addEventListener('click', () => {
+                    document.getElementById('signup-form-wrapper').classList.add('hidden');
+                    document.getElementById('signin-form-wrapper').classList.remove('hidden');
+                });
+                userIdDisplayElement.classList.add('hidden');
+            }
+        };
 
-            /**
-             * Gère la soumission du formulaire de connexion.
-             * @param {Event} event - L'événement de soumission.
-             */
-            const handleAuth = (event) => {
-                event.preventDefault();
-                const username = document.getElementById('username').value.trim();
-                const age = document.getElementById('age').value.trim();
+        /**
+         * Gère la soumission du formulaire d'inscription.
+         * @param {Event} event - L'événement de soumission.
+         */
+        const handleSignUp = async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const username = document.getElementById('signup-username').value;
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Mettre à jour le nom d'affichage de l'utilisateur
+                await updateProfile(user, { displayName: username });
+
+                // Sauvegarder le profil dans Firestore
+                await setDoc(doc(db, `artifacts/${appId}/users/${user.uid}/profiles`, user.uid), {
+                    name: username,
+                    email: email
+                });
+
+                showAlert(`Compte créé pour ${username} !`);
+            } catch (error) {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error("Erreur d'inscription:", errorCode, errorMessage);
+                // Gère l'erreur spécifique si la connexion par email/mot de passe n'est pas activée
+                if (errorCode === 'auth/operation-not-allowed') {
+                    showAlert('Erreur: La connexion par email et mot de passe n\'est pas activée. Veuillez activer cette option dans la console Firebase.');
+                } else if (errorCode === 'auth/email-already-in-use') {
+                    showAlert('Cet email est déjà utilisé.');
+                } else if (errorCode === 'auth/weak-password') {
+                    showAlert('Le mot de passe doit contenir au moins 6 caractères.');
+                } else {
+                    showAlert('Erreur lors de la création du compte. Veuillez réessayer.');
+                }
+            }
+        };
+
+        /**
+         * Gère la soumission du formulaire de connexion.
+         * @param {Event} event - L'événement de soumission.
+         */
+        const handleSignIn = async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // onAuthStateChanged gérera la suite
+            } catch (error) {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error("Erreur de connexion:", errorCode, errorMessage);
+                // Gère l'erreur spécifique si la connexion par email/mot de passe n'est pas activée
+                if (errorCode === 'auth/operation-not-allowed') {
+                    showAlert('Erreur: La connexion par email et mot de passe n\'est pas activée. Veuillez activer cette option dans la console Firebase.');
+                } else if (errorCode === 'auth/invalid-credential') {
+                    showAlert('Email ou mot de passe incorrect.');
+                } else {
+                    showAlert('Erreur de connexion. Veuillez réessayer.');
+                }
+            }
+        };
+
+        /**
+         * Gère la déconnexion de l'utilisateur.
+         */
+        const handleSignOut = async () => {
+            try {
+                await signOut(auth);
+                userProfile = null;
+                showAlert('Vous avez été déconnecté.');
+            } catch (e) {
+                console.error("Erreur de déconnexion: ", e);
+                showAlert("Erreur lors de la déconnexion.");
+            }
+        };
+
+        // Gestionnaires d'événements pour la navigation
+        document.getElementById('home-nav-link').addEventListener('click', () => showPage('products-page'));
+        document.getElementById('cart-nav-link').addEventListener('click', () => showPage('cart-page'));
+        document.getElementById('profile-nav-link').addEventListener('click', () => showPage('profile-page'));
+        // Ajout du listener pour le nouveau bouton de retour sur la page secrète
+        document.getElementById('back-to-profile-btn').addEventListener('click', () => showPage('profile-page'));
+
+        document.getElementById('checkout-button').addEventListener('click', () => {
+            if (cart.length > 0) {
+                showAlert('Transaction en cours... Le paiement n\'est pas fonctionnel pour l\'instant.');
+                cart = []; // Vide le panier après le "paiement"
+                showPage('products-page'); // Renvoie l'utilisateur à la page d'accueil
+            } else {
+                showAlert('Votre panier est vide. Impossible de passer à la caisse.');
+            }
+        });
+
+        // Initialisation de l'application
+        document.addEventListener('DOMContentLoaded', async () => {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Gère l'authentification initiale avec le token
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } catch (e) {
+                    console.error("Erreur de connexion avec le token personnalisé: ", e);
+                }
+            }
+            
+            // On attend que l'état d'authentification de l'utilisateur soit chargé
+            onAuthStateChanged(auth, async (user) => {
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) loadingMessage.remove(); // Retire le message de chargement
+
+                if (user) {
+                    userId = user.uid;
+                    // Tente de récupérer le profil de l'utilisateur depuis Firestore
+                    const docRef = doc(db, `artifacts/${appId}/users/${userId}/profiles`, userId);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        userProfile = docSnap.data();
+                    } else {
+                        userProfile = null;
+                    }
+                } else {
+                    userId = null;
+                    userProfile = null;
+                }
                 
-                if (username && age) {
-                    userProfile = {
-                        name: username,
-                        age: age
-                    };
-                    renderProfile();
-                    showAlert(`Bienvenue, ${username} !`);
-                } else {
-                    showAlert('Veuillez remplir tous les champs.');
-                }
-            };
-
-            // Gestionnaires d'événements pour la navigation
-            document.getElementById('home-nav-link').addEventListener('click', () => showPage('products-page'));
-            document.getElementById('cart-nav-link').addEventListener('click', () => showPage('cart-page'));
-            document.getElementById('profile-nav-link').addEventListener('click', () => showPage('profile-page'));
-            document.getElementById('checkout-button').addEventListener('click', () => {
-                if (cart.length > 0) {
-                    showAlert('Transaction en cours... Le paiement n\'est pas fonctionnel pour l\'instant.');
-                    cart = []; // Vide le panier après le "paiement"
-                    showPage('products-page'); // Renvoie l'utilisateur à la page d'accueil
-                } else {
-                    showAlert('Votre panier est vide. Impossible de passer à la caisse.');
-                }
+                // Une fois l'état d'authentification prêt, on rend le contenu
+                renderProductsInDiv(productListElement, products, 'products-page');
+                showPage('products-page');
             });
-
-            // Initialisation de l'application
-            renderProducts();
-            showPage('products-page');
         });
     </script>
 </body>
 </html>
-
