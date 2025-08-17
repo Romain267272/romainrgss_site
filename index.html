@@ -1,634 +1,427 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Cadre avec pseudo</title>
-  <!-- Lien vers la librairie d'icônes Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    body {
-      /* Mise en place du fond d'image */
-      background-image: url('https://i.pinimg.com/1200x/55/63/77/556377147a541ee4932634f55e226791.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-color: #0a0a0a;
-      
-      color: white;
-      font-family: 'Arial', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      height: 100vh;
-      margin: 0;
-      padding-top: 80px;
-    }
-
-    /* Masque le lecteur audio pour qu'il soit invisible */
-    #background-music {
-      display: none;
-    }
-    
-    .card {
-      /* Ajout d'une transparence pour mieux voir le fond */
-      background-color: rgba(30, 30, 30, 0.8); 
-      border: 2px solid #555;
-      border-radius: 12px;
-      padding: 40px 30px 60px 30px;
-      width: 320px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-      text-align: center;
-      /* Assure que la carte est au-dessus du fond */
-      z-index: 1; 
-      
-      /* Modification pour allonger le cadre vers le bas */
-      min-height: 300px; /* Hauteur minimale encore réduite */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      /* J'ai ajusté le padding en haut pour faire de la place à l'image */
-      padding: 20px 30px 60px 30px;
-
-      /* Animation de remontée */
-      opacity: 0;
-      transform: translateY(100vh); /* Démarre la carte en bas de l'écran */
-      transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Ajoute une transition fluide */
-      position: relative; /* Pour que le positionnement absolu du bouton fonctionne */
-    }
-
-    /* Classe qui s'ajoute via JavaScript pour déclencher l'animation */
-    .card.show {
-      opacity: 1;
-      transform: translateY(0); /* Remonte la carte à sa position initiale */
-    }
-    
-    /* Nouveau style pour la photo de profil */
-    .profile-pic {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%; /* Pour une forme de cercle */
-        border: 2px solid #555;
-        margin-bottom: 20px;
-        object-fit: cover;
-    }
-
-    .pseudo {
-      /* Ajout d'une transparence pour mieux voir le fond */
-      background-color: rgba(30, 30, 30, 0.8); 
-      /* même bord que le cadre */
-      border: 2px solid #555; 
-      border-radius: 10px;
-      padding: 10px 20px;
-      /* plus gros */
-      font-size: 2.2em; 
-      font-weight: bold;
-      margin-bottom: 30px;
-      display: inline-block;
-      z-index: 1;
-    }
-    
-    /* Conteneur pour les carrés afin de les centrer */
-    .squares-container {
-      display: flex;
-      justify-content: center;
-      gap: 20px; /* Ajoute de l'espace entre les carrés */
-      /* Correction : J'ai ajusté la marge du haut pour les déplacer vers le haut */
-      margin-top: -20px;
-      /* J'ai ajouté une largeur pour que le conteneur soit centré avec le bouton de musique */
-      width: 300px;
-    }
-
-    /* Nouveau style pour les carrés */
-    .square {
-      width: 80px;
-      height: 80px;
-      /* Correction : La couleur de fond est maintenant foncée pour correspondre au reste */
-      background-color: rgba(30, 30, 30, 0.8);
-      /* Correction : La bordure est maintenant plus épaisse et foncée pour correspondre au reste */
-      border: 2px solid #555;
-      border-radius: 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.2s; /* Ajout d'une transition pour l'effet de survol */
-    }
-
-    .square:hover {
-      transform: scale(1.1); /* Effet de zoom au survol */
-    }
-
-    /* Style des icônes à l'intérieur des carrés */
-    .square i {
-      font-size: 3em;
-      color: white;
-    }
-
-    /* Nouveau style pour le bouton de musique rectangulaire */
-    .music-toggle-button {
-      display: flex; /* Utilisation de flexbox pour aligner le texte et l'icône */
-      justify-content: flex-start; /* Aligne le contenu à gauche */
-      align-items: center;
-      width: 300px; /* Largeur du bouton rectangulaire augmentée */
-      padding: 15px 25px;
-      margin-top: 20px;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: white;
-      background-color: rgba(30, 30, 30, 0.8);
-      border: 2px solid #555;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s ease-in-out, transform 0.2s;
-      text-align: left; /* Pour que le texte s'aligne correctement */
-    }
-
-    .music-toggle-button:hover {
-      background-color: rgba(50, 50, 50, 0.8);
-      transform: scale(1.05);
-    }
-
-    .music-toggle-button .icon-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5em; 
-        width: 40px; 
-        /* Correction : Ajoute une hauteur fixe pour empêcher le décalage */
-        height: 40px; 
-        margin-right: 15px;
-        /* Correction : Empêche le conteneur de se réduire */
-        flex-shrink: 0;
-        /* Ajustement de la marge pour décaler le logo à gauche */
-        margin-left: -10px; 
-    }
-
-    .music-toggle-button .music-info {
-        display: flex;
-        align-items: center;
-        flex-grow: 1; /* Permet au conteneur de s'étendre */
-    }
-
-    .music-toggle-button .music-info .music-image {
-        width: 50px;
-        height: 50px;
-        border-radius: 5px;
-        margin-right: 15px;
-        object-fit: cover;
-    }
-
-    .music-toggle-button .music-text {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .music-toggle-button .music-text .track-name {
-        font-size: 1em;
-        font-weight: bold;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px;
-    }
-
-    .music-toggle-button .music-text .artist-name {
-        font-size: 0.8em;
-        font-weight: normal;
-        color: #bbb;
-    }
-    
-    /* Styles pour le conteneur du jeu, maintenant un long rectangle horizontal encore plus fin */
-    #game-container {
-      margin-top: 10px; /* Mise à jour pour le déplacer plus haut */
-      width: 300px; /* Même largeur que le bouton de musique */
-      height: 100px; /* Hauteur réduite pour un aspect plus fin */
-      border: 2px solid #555;
-      border-radius: 8px;
-      background-color: rgba(30, 30, 30, 0.8);
-      position: relative;
-      overflow: hidden;
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    
-    /* Style pour le canvas du jeu, pour qu'il prenne toute la place */
-    #gameCanvas {
-      width: 100%;
-      height: 100%;
-      background-color: rgba(30, 30, 30, 0.8);
-      display: block;
-      image-rendering: pixelated; /* Pour le rendu pixel art */
-    }
-
-    /* Style pour le message de jeu */
-    #game-message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.5em;
-      font-weight: bold;
-      text-align: center;
-      width: 100%;
-      padding: 20px; /* Augmenté le padding pour un meilleur espacement */
-      background-color: rgba(30, 30, 30, 0.9);
-      border-radius: 5px;
-      display: none; /* Masqué par défaut */
-      z-index: 10;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* Style pour le titre "Game Over" */
-    #game-message h2 {
-        font-size: 4em; /* Augmenté la taille pour que ce soit plus visible */
-        color: #e74c3c; /* Rouge pour l'attention */
-        margin-bottom: 5px; /* Réduit l'espace en bas pour le rapprocher du haut */
-        text-shadow: 2px 2px 4px #000; /* Ajout d'une ombre portée pour un meilleur contraste */
-    }
-
-    /* Style pour le score final */
-    #game-message p {
-        font-size: 0.9em; /* Taille plus petite pour le score */
-        margin-bottom: 20px; /* Ajoute un espace en bas pour le séparer du bouton */
-    }
-
-    /* Nouveau style pour le bouton de jeu */
-    .game-button {
-      background-color: #2a2a2a;
-      color: white;
-      border: 2px solid #555;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 1em;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin-top: 10px;
-    }
-
-    .game-button:hover {
-      background-color: #444;
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique en Ligne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Masque toutes les sections de page par défaut */
+        .page-content {
+            display: none;
+        }
+        .page-content.active {
+            display: block;
+        }
+        /* Ajoute un effet de survol pour les cartes de produits */
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
 </head>
-<body>
-  <audio id="background-music" loop>
-    <source src="son (1).mp3" type="audio/mpeg">
-    Votre navigateur ne supporte pas l'élément audio.
-  </audio>
+<body class="bg-gray-100 dark:bg-zinc-900 text-gray-800 dark:text-gray-200">
 
-  <div class="card">
-    <img src="https://i.pinimg.com/736x/59/69/11/59691152b357b08b5f8f5e6ed5d7177d.jpg" alt="Photo de profil" class="profile-pic">
-    
-    <div class="pseudo">𝕽𝖔𝖒𝖆𝖎𝖓𝖗𝖌𝖘𝖘</div>
-    
-    <div class="squares-container">
-      <a href="https://www.tiktok.com/@romainrgss" target="_blank" class="square">
-        <i class="fab fa-tiktok"></i>
-      </a>
-      <a href="https://www.instagram.com/romainrgss" target="_blank" class="square">
-        <i class="fab fa-instagram"></i>
-      </a>
-      <a href="https://open.spotify.com/user/Romainrgss" target="_blank" class="square">
-        <i class="fab fa-spotify"></i>
-      </a>
+    <!-- Conteneur principal pour la vue téléphone -->
+    <div class="max-w-sm mx-auto bg-white dark:bg-zinc-800 shadow-2xl rounded-3xl overflow-hidden mt-4 mb-4">
+
+        <!-- En-tête de la boutique -->
+        <header class="bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white p-4 shadow-lg flex justify-between items-center">
+            <h1 class="text-2xl font-bold">JOJO INDUSTRIES</h1>
+            <div class="flex items-center space-x-4">
+                <!-- Icône du panier d'achat -->
+                <button id="cart-button" class="relative focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.706.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sections du site (simulant des pages) -->
+        <main class="h-[calc(100vh-12rem)] overflow-y-auto p-4">
+
+            <!-- Page des produits (page d'accueil) -->
+            <section id="products-page" class="page-content active">
+                <h2 class="text-2xl font-bold mb-4 text-center">Nos Produits</h2>
+                <div id="product-list" class="grid grid-cols-2 gap-4">
+                    <!-- Les produits seront injectés ici par JavaScript -->
+                </div>
+            </section>
+
+            <!-- Page de détails d'un produit -->
+            <section id="product-detail-page" class="page-content">
+                <button id="back-button" class="mb-4 px-4 py-2 bg-gray-200 dark:bg-zinc-700 rounded-full flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Retour</span>
+                </button>
+                <div id="product-detail-container" class="space-y-4 text-center">
+                    <!-- Les détails du produit seront injectés ici -->
+                </div>
+            </section>
+
+            <!-- Page du panier d'achat -->
+            <section id="cart-page" class="page-content">
+                <h2 class="text-2xl font-bold mb-4 text-center">Mon Panier</h2>
+                <div id="cart-items-list" class="space-y-4">
+                    <!-- Les articles du panier seront injectés ici -->
+                </div>
+                <div id="cart-summary" class="mt-6 p-4 rounded-xl bg-gray-50 dark:bg-zinc-700 shadow-md">
+                    <div class="flex justify-between items-center text-lg font-bold">
+                        <span>Total :</span>
+                        <span id="cart-total">0.00€</span>
+                    </div>
+                </div>
+                <button id="checkout-button" class="mt-6 w-full py-3 bg-violet-600 text-white font-semibold rounded-full shadow-lg hover:bg-violet-700 transition-colors">
+                    Passer à la Caisse
+                </button>
+                <p id="empty-cart-message" class="text-center mt-8 text-gray-500 hidden">Votre panier est vide.</p>
+            </section>
+            
+            <!-- Nouvelle page de profil -->
+            <section id="profile-page" class="page-content">
+                <button id="profile-back-button" class="mb-4 px-4 py-2 bg-gray-200 dark:bg-zinc-700 rounded-full flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>Retour</span>
+                </button>
+                <div id="profile-container" class="space-y-4 text-center">
+                    <!-- Le contenu du profil sera affiché ici par JS -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Barre de navigation inférieure -->
+        <footer class="bg-gray-200 dark:bg-zinc-700 shadow-inner p-2 border-t border-gray-300 dark:border-zinc-600">
+            <nav>
+                <ul class="flex justify-around items-center text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <li>
+                        <button id="home-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span>Accueil</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button id="cart-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.706.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <span>Panier</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button id="profile-nav-link" class="nav-link flex flex-col items-center p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span>Profil</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </footer>
+
     </div>
 
-    <button id="music-toggle-btn" class="music-toggle-button">
-      <span class="icon-container">
-        <i class="fas fa-play"></i>
-      </span>
-      <div class="music-info">
-        <img src="https://i.pinimg.com/736x/26/1f/e2/261fe28a4885d8a8757252d14c070e9d.jpg" alt="Image de l'album" class="music-image">
-        <div class="music-text">
-          <span class="track-name">Exit Music (For a Film)</span>
-          <span class="artist-name">Radiohead</span>
-        </div>
-      </div>
-    </button>
-    
-    <div id="game-container">
-        <canvas id="gameCanvas" style="display: none;"></canvas>
-        <button id="start-button" class="game-button">Commencer</button>
-        <div id="game-message" style="display: none;">
-            <button id="restart-button" class="game-button">Rejouer</button>
-        </div>
-    </div>
-  </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Données de produits fictives
+            const products = [
+                { id: 1, name: "ASIAT", price: 29.99, image: "https://i.pinimg.com/736x/1e/b5/a1/1eb5a1bfc6415175b865cb86a29cd3af.jpg", description: "POUR JOAQUIN" },
+                { id: 2, name: "SERANO TRES SALE", price: 19.50, image: "https://restofrais.be/images/thumbs/0041758_510.jpeg", description: "JOHAN TROUVE SA SALE" },
+                { id: 3, name: "AK 47", price: 49.99, image: "https://i.pinimg.com/1200x/fd/ac/ac/fdacacb15530026934cef826876c2e6f.jpg", description: "DES CHOSE SOMBRES SE SONT PASSER " },
+                { id: 4, name: "LE TOILETTE", price: 75.00, image: "https://cdn.shopify.com/s/files/1/0240/0257/files/00079109_1800x1800_ad456345-08ad-47d9-a189-42932af76d5f_480x480.webp?v=1723925988", description: "MAIS NAN MICKEY!!!" },
+                { id: 5, name: "PUFF GOUT PAFF", price: 9.99, image: "https://www.evaps.fr/documents/media/images/contenu/randm-cherry-cola.jpg", description: "TQT C BON POUR LA SANTE" },
+                { id: 6, name: "THUNG SAHUR", price: 129.00, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPnrgczuCdzysMmkHBUVqt6pRLrHhRThf9w&s", description: "THUNG THUNG THUNG THUNG THUNG SAHUR" },
+            ];
 
-  <script>
-    // Attend que le DOM soit complètement chargé
-    document.addEventListener('DOMContentLoaded', () => {
-      const card = document.querySelector('.card');
-      const music = document.getElementById('background-music');
-      const musicToggleBtn = document.getElementById('music-toggle-btn');
-      const musicIcon = musicToggleBtn.querySelector('.icon-container i');
-      
-      // Ajoute la classe 'show' pour déclencher l'animation de la carte
-      setTimeout(() => {
-        card.classList.add('show');
-      }, 100);
+            let cart = []; // Le panier d'achat, initialement vide
+            let userProfile = null; // Le profil utilisateur, initialement vide
+            let currentPage = "products-page"; // La page actuelle affichée
 
-      // Met à jour l'état initial du bouton de musique
-      const updateMusicButton = () => {
-        if (music.paused) {
-          musicIcon.classList.remove('fa-pause');
-          musicIcon.classList.add('fa-play');
-        } else {
-          musicIcon.classList.remove('fa-play');
-          musicIcon.classList.add('fa-pause');
-        }
-      };
+            const productListElement = document.getElementById('product-list');
+            const cartCountElement = document.getElementById('cart-count');
+            const cartItemsListElement = document.getElementById('cart-items-list');
+            const cartTotalElement = document.getElementById('cart-total');
+            const emptyCartMessageElement = document.getElementById('empty-cart-message');
+            const profileContainerElement = document.getElementById('profile-container');
 
-      // Tente de lancer la musique automatiquement
-      const playPromise = music.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            // L'autoplay a fonctionné, met à jour le bouton
-            updateMusicButton();
-            console.log("Autoplay réussi !");
-          })
-          .catch(error => {
-            // L'autoplay a été bloqué, le bouton reste sur l'état "play"
-            console.log("Autoplay bloqué, le bouton de lecture est affiché.");
-            updateMusicButton(); // S'assure que le bouton est dans l'état initial (play)
-          });
-      } else {
-        updateMusicButton();
-      }
-      
-      // Ajoute un écouteur d'événements pour le nouveau bouton de bascule
-      musicToggleBtn.addEventListener('click', () => {
-        if (music.paused) {
-          music.play();
-        } else {
-          music.pause();
-        }
-        // Met à jour l'icône et le texte immédiatement après l'interaction
-        updateMusicButton();
-      });
-      
-      // Écoute les événements 'play' et 'pause' pour synchroniser le bouton
-      music.addEventListener('play', updateMusicButton);
-      music.addEventListener('pause', updateMusicButton);
+            const pages = {
+                'products-page': document.getElementById('products-page'),
+                'product-detail-page': document.getElementById('product-detail-page'),
+                'cart-page': document.getElementById('cart-page'),
+                'profile-page': document.getElementById('profile-page')
+            };
 
-      // --- Logique pour le mini-jeu du vaisseau spatial ---
-      const canvas = document.getElementById('gameCanvas');
-      const ctx = canvas.getContext('2d');
-      const gameMessage = document.getElementById('game-message');
-      const startButton = document.getElementById('start-button');
-      const restartButton = document.getElementById('restart-button');
-      
-      let animationFrameId;
-      let player, enemies, bullets;
-      let score, isGameOver;
-      let keys = {};
-      
-      const gameConfig = {
-          // J'ai réduit la vitesse du joueur de 3 à 2 pour diminuer la sensibilité.
-          playerSpeed: 2, 
-          bulletSpeed: 5,
-          enemySpeed: 0.8,
-          enemySpawnRate: 1500, // en millisecondes
-          lastSpawnTime: 0,
-      };
+            // Fonction pour changer de page
+            const showPage = (pageId) => {
+                for (const id in pages) {
+                    pages[id].classList.remove('active');
+                }
+                pages[pageId].classList.add('active');
+                currentPage = pageId;
+            };
 
-      // Configuration du joueur (plus détaillé pour le pixel art)
-      function createPlayer() {
-          return {
-              x: 20, // Vaisseau sur le bord gauche
-              y: canvas.height / 2, // Position Y initiale au centre
-              width: 20,
-              height: 20,
-              color: 'white',
-              health: 3
-          };
-      }
+            // Fonction pour mettre à jour le nombre d'articles dans le panier
+            const updateCartCount = () => {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCountElement.textContent = totalItems;
+            };
 
-      // Dessine le joueur avec un style pixel art
-      function drawPlayer() {
-        ctx.fillStyle = '#c0c0c0'; // Gris clair pour le corps
-        // corps du vaisseau
-        ctx.fillRect(player.x - 5, player.y - 5, 20, 10);
-        // ailerons
-        ctx.fillRect(player.x - 10, player.y - 10, 5, 20);
-        // cockpit
-        ctx.fillStyle = '#ffffff'; // Blanc pour le cockpit
-        ctx.fillRect(player.x + 5, player.y - 2.5, 5, 5);
-      }
-      
+            // Fonction pour rendre la liste des produits
+            const renderProducts = () => {
+                productListElement.innerHTML = '';
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('product-card', 'bg-white', 'dark:bg-zinc-700', 'p-4', 'rounded-xl', 'shadow-md', 'flex', 'flex-col', 'items-center', 'text-center', 'cursor-pointer', 'transition-transform', 'duration-200');
+                    productCard.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}" class="rounded-lg mb-2">
+                        <h3 class="text-sm font-semibold w-full">${product.name}</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">${product.price.toFixed(2)}€</p>
+                        <button class="add-to-cart-btn px-4 py-2 text-xs bg-violet-500 text-white rounded-full hover:bg-violet-600 transition-colors w-full">Ajouter</button>
+                    `;
+                    // Ajoute un écouteur d'événement pour afficher les détails du produit
+                    productCard.addEventListener('click', (e) => {
+                        // Évite l'événement si le bouton "Ajouter" a été cliqué
+                        if (e.target.classList.contains('add-to-cart-btn')) {
+                            return;
+                        }
+                        renderProductDetail(product);
+                        showPage('product-detail-page');
+                    });
+                    productListElement.appendChild(productCard);
 
-      // Configuration des ennemis (qui arrivent de droite à gauche)
-      function createEnemy() {
-          const size = 16;
-          return {
-              x: canvas.width, // Commence sur le bord droit
-              y: Math.random() * (canvas.height - size), // Position y aléatoire
-              width: size,
-              height: size,
-              color: 'red',
-              speed: gameConfig.enemySpeed * (Math.random() + 0.5),
-          };
-      }
+                    // Ajoute un écouteur d'événement pour le bouton "Ajouter au panier"
+                    productCard.querySelector('.add-to-cart-btn').addEventListener('click', () => {
+                        addToCart(product);
+                    });
+                });
+            };
 
-      // Dessine les ennemis avec un style pixel art
-      function drawEnemies() {
-        enemies.forEach(enemy => {
-            const size = enemy.width;
-            const x = enemy.x;
-            const y = enemy.y;
-            // Corps de l'ennemi
-            ctx.fillStyle = '#a0a0a0'; // Gris pour le corps
-            ctx.fillRect(x, y + size/4, size, size/2);
-            // Tête et pieds
-            ctx.fillRect(x + size/4, y, size/2, size/4);
-            ctx.fillRect(x + size/4, y + size * 3/4, size/2, size/4);
-            // Yeux
-            ctx.fillStyle = '#ffffff'; // Blanc pour les yeux
-            ctx.fillRect(x + size/8, y + size/4, size/8, size/8);
-            ctx.fillRect(x + size * 5/8, y + size/4, size/8, size/8);
+            // Fonction pour rendre la page de détails d'un produit
+            const renderProductDetail = (product) => {
+                const detailContainer = document.getElementById('product-detail-container');
+                detailContainer.innerHTML = `
+                    <img src="${product.image.replace('150x150', '300x300')}" alt="${product.name}" class="rounded-xl w-full mx-auto shadow-lg mb-4">
+                    <h2 class="text-3xl font-bold">${product.name}</h2>
+                    <p class="text-xl font-semibold text-fuchsia-600">${product.price.toFixed(2)}€</p>
+                    <p class="text-gray-600 dark:text-gray-400">${product.description}</p>
+                    <button id="add-to-cart-detail-btn" class="mt-4 px-6 py-3 bg-violet-600 text-white font-semibold rounded-full shadow-lg hover:bg-violet-700 transition-colors w-full">Ajouter au Panier</button>
+                `;
+                // Ajoute l'écouteur d'événement pour le bouton "Ajouter au Panier" sur la page de détail
+                document.getElementById('add-to-cart-detail-btn').addEventListener('click', () => {
+                    addToCart(product);
+                });
+            };
+
+            // Fonction pour ajouter un produit au panier
+            const addToCart = (product) => {
+                const existingItem = cart.find(item => item.id === product.id);
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({ ...product, quantity: 1 });
+                }
+                updateCartCount();
+                alertMessage('Article ajouté au panier !', 'bg-violet-500');
+            };
+
+            // Fonction pour rendre la page du panier
+            const renderCart = () => {
+                cartItemsListElement.innerHTML = '';
+                let total = 0;
+                if (cart.length === 0) {
+                    emptyCartMessageElement.classList.remove('hidden');
+                    cartTotalElement.textContent = '0.00€';
+                } else {
+                    emptyCartMessageElement.classList.add('hidden');
+                    cart.forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.classList.add('flex', 'items-center', 'space-x-4', 'p-2', 'rounded-xl', 'bg-gray-50', 'dark:bg-zinc-700', 'shadow-sm');
+                        itemElement.innerHTML = `
+                            <img src="${item.image.replace('150x150', '50x50')}" alt="${item.name}" class="rounded-lg w-12 h-12">
+                            <div class="flex-1">
+                                <h4 class="font-semibold">${item.name}</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">${item.price.toFixed(2)}€</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button class="quantity-decrease text-lg font-bold w-6 h-6 rounded-full bg-gray-200 dark:bg-zinc-600">-</button>
+                                <span class="font-semibold">${item.quantity}</span>
+                                <button class="quantity-increase text-lg font-bold w-6 h-6 rounded-full bg-gray-200 dark:bg-zinc-600">+</button>
+                            </div>
+                        `;
+                        cartItemsListElement.appendChild(itemElement);
+
+                        total += item.price * item.quantity;
+                        
+                        // Ajoute les écouteurs pour la modification de quantité
+                        itemElement.querySelector('.quantity-decrease').addEventListener('click', () => {
+                            if (item.quantity > 1) {
+                                item.quantity--;
+                            } else {
+                                cart = cart.filter(cartItem => cartItem.id !== item.id);
+                            }
+                            updateCartCount();
+                            renderCart();
+                        });
+                        itemElement.querySelector('.quantity-increase').addEventListener('click', () => {
+                            item.quantity++;
+                            updateCartCount();
+                            renderCart();
+                        });
+                    });
+                }
+                cartTotalElement.textContent = total.toFixed(2) + '€';
+            };
+            
+            // Fonction pour rendre la page de profil
+            const renderProfile = () => {
+                profileContainerElement.innerHTML = '';
+                if (userProfile) {
+                    // Si un profil existe, affiche les détails
+                    profileContainerElement.innerHTML = `
+                        <h2 class="text-2xl font-bold mb-4">Mon Profil</h2>
+                        <img src="${userProfile.photoUrl}" alt="Photo de profil de ${userProfile.name}" class="w-24 h-24 rounded-full mx-auto shadow-lg mb-4">
+                        <p class="text-xl font-semibold">${userProfile.name}</p>
+                        ${userProfile.age ? `<p class="text-md text-gray-500 dark:text-gray-400">Âge : ${userProfile.age} ans</p>` : ''}
+                    `;
+                } else {
+                    // Sinon, affiche le formulaire de création de compte
+                    profileContainerElement.innerHTML = `
+                        <h2 class="text-2xl font-bold mb-6">Créer un Compte</h2>
+                        <form id="create-account-form" class="space-y-4">
+                            <div>
+                                <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom d'utilisateur</label>
+                                <input type="text" id="username" name="username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 dark:bg-zinc-700 dark:border-zinc-600 focus:ring-violet-500 focus:border-violet-500" placeholder="Entrez votre nom" required>
+                            </div>
+                            <div>
+                                <label for="age" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Âge</label>
+                                <input type="number" id="age" name="age" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 dark:bg-zinc-700 dark:border-zinc-600 focus:ring-violet-500 focus:border-violet-500" placeholder="Entrez votre âge" required>
+                            </div>
+                            <button type="submit" class="w-full py-2 bg-violet-600 text-white font-semibold rounded-md shadow-lg hover:bg-violet-700 transition-colors">
+                                Créer mon Compte
+                            </button>
+                        </form>
+                    `;
+                    // Ajoute un écouteur d'événement pour le formulaire
+                    document.getElementById('create-account-form').addEventListener('submit', handleAccountCreation);
+                }
+            };
+            
+            // Fonction pour gérer la création de compte
+            const handleAccountCreation = (event) => {
+                event.preventDefault();
+                const usernameInput = document.getElementById('username');
+                const ageInput = document.getElementById('age');
+                const username = usernameInput.value.trim();
+                const age = parseInt(ageInput.value, 10);
+                
+                if (username && !isNaN(age) && age > 0) {
+                    // Crée le profil utilisateur
+                    const userPhotos = [
+                        "https://placehold.co/100x100/F59E0B/FFFFFF?text=😊",
+                        "https://placehold.co/100x100/10B981/FFFFFF?text=?",
+                        "https://placehold.co/100x100/EF4444/FFFFFF?text=🚀",
+                        "https://placehold.co/100x100/6366F1/FFFFFF?text=🌟"
+                    ];
+                    const randomPhoto = userPhotos[Math.floor(Math.random() * userPhotos.length)];
+                    
+                    userProfile = {
+                        name: username,
+                        age: age,
+                        photoUrl: randomPhoto
+                    };
+                    
+                    // Affiche le profil mis à jour
+                    renderProfile();
+                    alertMessage('Compte créé avec succès !', 'bg-violet-500');
+                } else {
+                    alertMessage('Veuillez entrer un nom d\'utilisateur et un âge valide.', 'bg-red-500');
+                }
+            };
+
+            // Fonction pour afficher un message temporaire (remplace alert())
+            const alertMessage = (message, bgColor) => {
+                const existingAlert = document.getElementById('custom-alert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+
+                const alertDiv = document.createElement('div');
+                alertDiv.id = 'custom-alert';
+                alertDiv.classList.add('fixed', 'bottom-20', 'left-1/2', 'transform', '-translate-x-1/2', 'p-3', 'rounded-xl', 'text-white', 'text-sm', 'shadow-lg', 'transition-all', 'duration-300', 'opacity-0', bgColor);
+                alertDiv.textContent = message;
+                document.body.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.style.opacity = '1';
+                }, 10); // Laissez un petit délai pour la transition
+
+                setTimeout(() => {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => alertDiv.remove(), 300);
+                }, 2000);
+            };
+
+            // Gestionnaires d'événements pour la navigation
+            document.getElementById('home-nav-link').addEventListener('click', () => {
+                showPage('products-page');
+            });
+
+            document.getElementById('cart-nav-link').addEventListener('click', () => {
+                renderCart();
+                showPage('cart-page');
+            });
+
+            document.getElementById('cart-button').addEventListener('click', () => {
+                renderCart();
+                showPage('cart-page');
+            });
+
+            document.getElementById('back-button').addEventListener('click', () => {
+                showPage('products-page');
+            });
+
+            document.getElementById('profile-nav-link').addEventListener('click', () => {
+                renderProfile();
+                showPage('profile-page');
+            });
+            
+            document.getElementById('profile-back-button').addEventListener('click', () => {
+                showPage('products-page');
+            });
+
+            document.getElementById('checkout-button').addEventListener('click', () => {
+                if (cart.length > 0) {
+                    alertMessage('Paiement non implémenté. Merci pour votre achat fictif !', 'bg-green-500');
+                    cart = [];
+                    updateCartCount();
+                    renderCart();
+                } else {
+                     alertMessage('Votre panier est vide !', 'bg-red-500');
+                }
+            });
+
+            // Initialise le site en affichant la page d'accueil avec les produits
+            renderProducts();
+            showPage('products-page');
         });
-      }
-
-      // Configuration des balles (qui tirent de gauche à droite)
-      function createBullet() {
-          return {
-              x: player.x + player.width,
-              y: player.y,
-              width: 10,
-              height: 2,
-              color: 'lime',
-          };
-      }
-
-      // Dessine les balles
-      function drawBullets() {
-          ctx.fillStyle = '#8a2be2'; // Un bleu-violet pour les balles
-          bullets.forEach(bullet => {
-              ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-          });
-      }
-
-      // Met à jour la position des éléments
-      function updateGame() {
-          if (isGameOver) return;
-
-          // Met à jour le joueur (déplacement vertical)
-          if ((keys['ArrowUp'] || keys['w'] || keys['z']) && player.y > 0) {
-              player.y -= gameConfig.playerSpeed;
-          }
-          if ((keys['ArrowDown'] || keys['s']) && player.y < canvas.height) {
-              player.y += gameConfig.playerSpeed;
-          }
-
-          // Met à jour les balles (déplacement horizontal de gauche à droite)
-          bullets = bullets.filter(bullet => bullet.x < canvas.width);
-          bullets.forEach(bullet => {
-              bullet.x += gameConfig.bulletSpeed;
-          });
-
-          // Met à jour les ennemis (déplacement de droite à gauche)
-          enemies = enemies.filter(enemy => enemy.x + enemy.width > 0);
-          enemies.forEach(enemy => {
-              enemy.x -= enemy.speed;
-          });
-
-          // Création de nouveaux ennemis
-          const now = Date.now();
-          if (now - gameConfig.lastSpawnTime > gameConfig.enemySpawnRate) {
-              enemies.push(createEnemy());
-              gameConfig.lastSpawnTime = now;
-          }
-
-          // Détection des collisions entre les balles et les ennemis
-          bullets.forEach((bullet, bIndex) => {
-              enemies.forEach((enemy, eIndex) => {
-                  if (
-                      bullet.x < enemy.x + enemy.width &&
-                      bullet.x + bullet.width > enemy.x &&
-                      bullet.y < enemy.y + enemy.height &&
-                      bullet.y + bullet.height > enemy.y
-                  ) {
-                      // Collision !
-                      bullets.splice(bIndex, 1);
-                      enemies.splice(eIndex, 1);
-                      score++;
-                  }
-              });
-          });
-
-          // Détection des collisions entre les ennemis et le joueur
-          enemies.forEach((enemy) => {
-              if (
-                  player.x - player.width / 2 < enemy.x + enemy.width &&
-                  player.x + player.width / 2 > enemy.x &&
-                  player.y - player.height / 2 < enemy.y + enemy.height &&
-                  player.y + player.height / 2 > enemy.y
-              ) {
-                  // Collision !
-                  player.health--;
-                  if (player.health <= 0) {
-                      gameOver();
-                  } else {
-                      // L'ennemi est retiré même si le joueur a de la vie
-                      const enemyIndex = enemies.indexOf(enemy);
-                      if (enemyIndex > -1) {
-                        enemies.splice(enemyIndex, 1);
-                      }
-                  }
-              }
-          });
-      }
-
-      // La boucle principale du jeu
-      function gameLoop() {
-          if (isGameOver) {
-              cancelAnimationFrame(animationFrameId);
-              return;
-          }
-
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          
-          updateGame();
-          drawPlayer();
-          drawEnemies();
-          drawBullets();
-
-          // Affiche le score et la vie
-          ctx.fillStyle = 'white'; // Blanc pour le texte
-          ctx.font = 'bold 12px monospace';
-          ctx.textAlign = 'left';
-          ctx.fillText(`SCORE ${score}`, 10, 15);
-          ctx.fillText(`VIES ${player.health}`, 10, 30);
-
-          animationFrameId = requestAnimationFrame(gameLoop);
-      }
-
-      // Gère la fin du jeu
-      function gameOver() {
-          isGameOver = true;
-          gameMessage.style.display = 'flex'; // Utilise flexbox pour centrer le contenu
-          canvas.style.display = 'none'; // Masque le canvas
-          cancelAnimationFrame(animationFrameId);
-      }
-
-      // Initialise le jeu
-      function initGame() {
-          // On s'assure que le canvas est visible et qu'il a une taille avant de le dessiner
-          canvas.style.display = 'block';
-          canvas.width = canvas.offsetWidth;
-          canvas.height = canvas.offsetHeight;
-          
-          player = createPlayer();
-          enemies = [];
-          bullets = [];
-          score = 0;
-          isGameOver = false;
-          gameMessage.style.display = 'none';
-          startButton.style.display = 'none'; // Cache le bouton de démarrage
-          gameConfig.lastSpawnTime = Date.now();
-          gameLoop();
-      }
-
-      // Gère les événements clavier
-      document.addEventListener('keydown', (e) => {
-          keys[e.key] = true;
-          if ((e.key === ' ' || e.key === 'a') && !isGameOver) {
-              bullets.push(createBullet());
-          }
-          if (e.key === 'Enter' && isGameOver) {
-              initGame();
-          }
-      });
-      document.addEventListener('keyup', (e) => {
-          keys[e.key] = false;
-      });
-
-      // Gère le redimensionnement de la fenêtre pour que le canvas s'adapte
-      window.addEventListener('resize', () => {
-          if (!isGameOver) {
-             initGame();
-          }
-      });
-
-      // Gère le clic sur le bouton "Commencer"
-      startButton.addEventListener('click', () => {
-          initGame();
-      });
-
-      // Gère le clic sur le bouton "Rejouer"
-      restartButton.addEventListener('click', () => {
-          initGame();
-      });
-    });
-  </script>
+    </script>
 </body>
 </html>
+?
