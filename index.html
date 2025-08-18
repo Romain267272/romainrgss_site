@@ -159,24 +159,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Données de produits fictives
             const products = [
-                { id: 1, name: "ASIAT", price: 29.99, image: "https://i.pinimg.com/736x/1e/b5/a1/1eb5a1bfc6415175b865cb86a29cd3af.jpg", description: "Un incontournable pour tous les connaisseurs. Savourez l'élégance et la profondeur de ses arômes exotiques." },
-                { id: 2, name: "SERANO TRES SALE", price: 19.50, image: "https://restofrais.be/images/thumbs/0041758_510.jpeg", description: "Ce produit exceptionnel est réputé pour sa saveur intense et salée. Parfait pour rehausser n'importe quel plat." },
-                { id: 3, name: "AK 47", price: 49.99, image: "https://i.pinimg.com/1200x/fd/ac/ac/fdacacb15530026934cef826876c2e6f.jpg", description: "Un classique indémodable, fiable et puissant. Design minimaliste, performance maximale." },
-                { id: 4, name: "LE TOILETTE", price: 75.00, image: "https://cdn.shopify.com/s/files/1/0240/0257/files/00079109_1800x1800_ad456345-08ad-47d9-a189-42932af76d5f_480x480.webp?v=1723925988", description: "Un modèle de confort et d'efficacité. Son design futuriste s'intègre parfaitement à n'importe quel espace." },
-                { id: 5, name: "THUNG SAHUR", price: 9.99, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPnrgczuCdzysMmkHBUVqt6pRLrHhRThf9w&s", description: "Un produit original et plein de caractère. Sa texture unique et sa polyvalence en font un choix parfait." },
-                { id: 6, name: "PUFF GOUT PAFF", price: 129.00, image: "https://www.mistersmoke.com/wp-content/uploads/2023/09/puff-vapen-mars-9000.webp", description: "Une innovation en matière de saveur et de design. Léger et pratique, il offre une expérience inoubliable." },
-                { id: 7, name: "PIEDS", price: 89.99, image: "https://www.icp-paris.fr/public/img/big/5Piedplat1jpg_63f75643628e1.jpg", description: "Le confort ultime pour vos pieds. Fabriqués avec des matériaux de haute qualité pour un bien-être durable." },
-                { id: 8, name: "EL MORGEN", price: 54.99, image: "https://thecandyshop.fr/wp-content/uploads/2024/09/pixelcut-export-1.webp", description: "Un mélange de saveurs exquises qui éveille les sens. Un must pour les matinées pleines de vitalité." },
-                { id: 9, name: "PH PREMIUM", price: 349.99, image: "https://paas-file-pro.igv.com/shop/650c5295fce5a57532d23bfd_692x656.png", description: "L'apogée de la technologie. Une performance inégalée dans un boîtier élégant et robuste." },
-                { id: 10, name: "COSTUME PIKACHU", price: 299.99, image: "https://pokemon-laboutique.fr/cdn/shop/products/ZEV.jpg?v=1654933833", description: "Transformez-vous en votre Pokémon préféré. Idéal pour les fêtes, les conventions ou tout simplement pour le plaisir." },
+                { id: 1, name: "ASIAT", price: 29.99, image: "https://i.pinimg.com/736x/1e/b5/a1/1eb5a1bfc6415175b865cb86a29cd3af.jpg", description: "POUR JOAQUIN" },
+                { id: 2, name: "SERANO TRES SALE", price: 19.50, image: "https://restofrais.be/images/thumbs/0041758_510.jpeg", description: "TRES SALE" },
+                { id: 3, name: "AK 47", price: 49.99, image: "https://i.pinimg.com/1200x/fd/ac/ac/fdacacb15530026934cef826876c2e6f.jpg", description: "DES CHOSES SOMBRES SE SONT PASSER AVEC" },
+                { id: 4, name: "LE TOILETTE", price: 75.00, image: "https://cdn.shopify.com/s/files/1/0240/0257/files/00079109_1800x1800_ad456345-08ad-47d9-a189-42932af76d5f_480x480.webp?v=1723925988", description: "DANS LE TOILETTE!!!" },
+                { id: 5, name: "THUNG SAHUR", price: 9.99, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPnrgczuCdzysMmkHBUVqt6pRLrHhRThf9w&s", description: "THUNG THUNG THUNG SAHUR" },
+                { id: 6, name: "PUFF GOUT PAFF", price: 129.00, image: "https://www.mistersmoke.com/wp-content/uploads/2023/09/puff-vapen-mars-9000.webp", description: "JSP" },
+                { id: 7, name: "PIEDS", price: 89.99, image: "https://www.icp-paris.fr/public/img/big/5Piedplat1jpg_63f75643628e1.jpg", description: "MMMMMMMH" },
+                { id: 8, name: "EL MORGEN", price: 54.99, image: "https://thecandyshop.fr/wp-content/uploads/2024/09/pixelcut-export-1.webp", description: "TRES RARE" },
+                { id: 9, name: "PH PREMIUM", price: 349.99, image: "https://paas-file-pro.igv.com/shop/650c5295fce5a57532d23bfd_692x656.png", description: "LE REVE DE TOUT HOMME" },
+                { id: 10, name: "COSTUME PIKACHU", price: 299.99, image: "https://pokemon-laboutique.fr/cdn/shop/products/ZEV.jpg?v=1654933833", description: "DARK PIKACHU" },
             ];
             
             // Nouvelle liste de produits pour la page secrète (vides)
             const secretProducts = [
-                { id: 11, name: "JUIF", price: 999.99, image: "https://cdn.discordapp.com/attachments/1374795990179250228/1406750664163332177/IMG_9438.png?ex=68a39a26&is=68a248a6&hm=f84f0b41e17d4eae0dc837800fdeda972fa5d3f97edb338ab7642373fbb250c9&", description: "Ce produit mystérieux est si rare qu'il n'a pas encore de description." },
-                { id: 12, name: "NGA", price: 1500.00, image: "https://cdn.discordapp.com/attachments/1374795990179250228/1406750664507527219/IMG_9437.png?ex=68a39a26&is=68a248a6&hm=f54e25ca288996536e89b6820d111961f7d94209a022d42a6cfe280f474947f0&", description: "Un article qui transcende la réalité. Son existence est un secret." },
-                { id: 13, name: "POMME SUSPECT", price: 777.77, image: "https://cdn.discordapp.com/attachments/1374795990179250228/1406750665136410645/IMG_9439.png?ex=68a39a26&is=68a248a6&hm=c9bb0a9eb198cc1ac1e74282c409b28df1429b7ab18aa78042ba0ebb194129dd&", description: "Un objet d'un autre monde, aux propriétés inconnues." },
-                { id: 14, name: "...", price: 2500.00, image: "https://i.pinimg.com/1200x/ee/59/a8/ee59a873bd98583e22ad59fee209bf99.jpg", description: "Un pouvoir indicible est caché à l'intérieur de cet objet." },
+                { id: 11, name: "JUIF", price: 999.99, image: "https://cdn.discordapp.com/attachments/1374795990179250228/1406750664163332177/IMG_9438.png?ex=68a39a26&is=68a248a6&hm=f84f0b41e17d4eae0dc837800fdeda972fa5d3f97edb338ab7642373fbb250c9&", description: "PARFAIT COMME CONSEILLER BANCAIRE" },
+                { id: 12, name: "NGA", price: 1500.00, image: "https://cdn.discordapp.com/attachments/1374795990179250228/1406750664507527219/IMG_9437.png?ex=68a39a26&is=68a248a6&hm=f54e25ca288996536e89b6820d111961f7d94209a022d42a6cfe280f474947f0&", description: "PARFAIT POUR LES CHAMPS DE COTONS" },
+                { id: 13, name: "POMME SUSPECT", price: 777.77, image: "https://cdn.discordapp.com/attachments/1374795990179250228/1406750665136410645/IMG_9439.png?ex=68a39a26&is=68a248a6&hm=c9bb0a9eb198cc1ac1e74282c409b28df1429b7ab18aa78042ba0ebb194129dd&", description: "TRES SUSPECT..." },
+                { id: 14, name: "PANDOU", price: 2500.00, image: "https://i.pinimg.com/1200x/ee/59/a8/ee59a873bd98583e22ad59fee209bf99.jpg", description: "BRO IS NOT TUFF" },
             ];
 
             // Variables d'état
@@ -525,4 +525,5 @@
     </script>
 </body>
 </html>
+
 
